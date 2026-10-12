@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculomon — Le RPG du calcul mental</title>
+<style>
+  :root {
+    --bg: #1a1c2c;
+    --panel: #29366f;
+    --panel-light: #3b5dc9;
+    --text: #f4f4f4;
+    --hp-green: #41d13f;
+    --hp-yellow: #ffd93d;
+    --hp-red: #ff4757;
+    --accent: #ffcd75;
+    --crit: #ff9f43;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Courier New', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+  }
+  h1 {
+    font-size: 1.6rem;
+    margin: 10px 0;
+    text-align: center;
+    color: var(--accent);
+    text-shadow: 2px 2px 0 #000;
+  }
+  #game {
+    width: 100%;
+    max-width: 700px;
+    background: var(--panel);
+    border: 4px solid #000;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .zone-badge {
+    background: var(--panel-light);
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 2px solid #000;
+    font-weight: bold;
+  }
+  #stats { font-size: 0.9rem; }
+  #enemy-area {
+    background: #5d5f8d;
+    border: 3px solid #000;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  #enemy-sprite { font-size: 4rem; line-height: 1; transition: transform .1s; }
+  #enemy-sprite.hit { animation: shake .3s; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-10px) rotate(-5deg); }
+    75% { transform: translateX(10px) rotate(5deg); }
+  }
+  #enemy-name { font-size: 1.1rem; margin-top: 6px; }
+  .hp-bar-outer {
+    width: 100%;
+    height: 16px;
+    background: #333;
+    border: 2px solid #000;
+    border-radius: 8px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  .hp-bar-inner {
+    height: 100%;
+    background: var(--hp-green);
+    transition: width .25s, background .25s;
+  }
+  #hp-text { font-size: 0.8rem; margin-top: 4px; }
+  #battle-area {
+    background: #1e2a4a;
+    border: 3px solid #000;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  #question {
+    font-size: 2rem;
+    text-align: center;
+    color: #fff;
+    letter-spacing: 3px;
+  }
+  #answer-input {
+    font-size: 1.6rem;
+    text-align: center;
+    padding: 8px;
+    border-radius: 8px;
+    border: 3px solid #000;
+    background: #fff;
+    color: #000;
+    width: 100%;
+    font-family: inherit;
+  }
+  #answer-input:focus { outline: 3px solid var(--accent); }
+  #timer-bar-outer {
+    height: 12px;
+    background: #333;
+    border: 2px solid #000;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  #timer-bar-inner {
+    height: 100%;
+    background: var(--hp-yellow);
+    width: 100%;
+    transition: width .1s linear;
+  }
+  #feedback {
+    min-height: 1.4em;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+  #feedback.good { color: var(--hp-green); }
+  #feedback.bad { color: var(--hp-red); }
+  #feedback.crit { color: var(--crit); font-size: 1.2rem; }
+  #log {
+    font-size: 0.8rem;
+    max-height: 100px;
+    overflow-y: auto;
+    background: #111;
+    border: 2px solid #000;
+    border-radius: 6px;
+    padding: 6px;
+  }
+  #log div { padding: 1px 0; }
+  .btn {
+    background: var(--panel-light);
+    color: #fff;
+    border: 3px solid #000;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  .btn:hover { background: #4a6fdb; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.75);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10;
+  }
+  .overlay.hidden { display: none; }
+  .overlay-box {
+    background: var(--panel);
+    border: 4px solid #000;
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    max-width: 420px;
+  }
+  .overlay-box h2 { color: var(--accent); margin-bottom: 10px; }
+  .overlay-box p { margin-bottom: 15px; line-height: 1.5; }
+  .flash-crit {
+    position: absolute; inset: 0;
+    background: rgba(255,159,67,.35);
+    animation: fadeout .4s forwards;
+    pointer-events: none;
+  }
+  @keyframes fadeout { to { opacity: 0; } }
+  .dmg-float {
+    position: absolute;
+    font-weight: bold;
+    font-size: 1.4rem;
+    animation: floatUp 1s forwards;
+    pointer-events: none;
+    text-shadow: 2px 2px 0 #000;
+  }
+  @keyframes floatUp {
+    from { bottom: 60px; opacity: 1; }
+    to { bottom: 160px; opacity: 0; }
+  }
+</style>
+</head>
+<body>
+<h1>⚡ CALCULOMON ⚡</h1>
+<div id="game">
+  <div class="row">
+    <span class="zone-badge" id="zone-name">Zone 1 — Prairie des Additions</span>
+    <span id="stats">Niveau 1 · Or : 0</span>
+  </div>
+
+  <div id="enemy-area">
+    <div id="enemy-sprite">🐱</div>
+    <div id="enemy-name">Chatomon Lv.1</div>
+    <div class="hp-bar-outer"><div class="hp-bar-inner" id="enemy-hp"></div></div>
+    <div id="hp-text">10 / 10 PV</div>
+  </div>
+
+  <div id="battle-area">
+    <div id="question">2 + 3 = ?</div>
+    <input id="answer-input" type="number" autocomplete="off" placeholder="Ta réponse...">
+    <div id="timer-bar-outer"><div id="timer-bar-inner"></div></div>
+    <div id="feedback"></div>
+    <div id="log"></div>
+    <div class="row">
+      <button class="btn" id="btn-attack">Attaquer !</button>
+      <button class="btn" id="btn-flee">Fuir</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="victory-overlay">
+  <div class="overlay-box">
+    <h2>🎉 Victoire !</h2>
+    <p id="victory-text">Calculomon vaincu !</p>
+    <button class="btn" id="btn-continue">Continuer l'aventure</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="gameover-overlay">
+  <div class="overlay-box">
+    <h2>💤 Défaite...</h2>
+    <p>Ton Calculomon est K.O. ! Retour à la Prairie.</p>
+    <button class="btn" id="btn-restart">Réessayer</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+// ---------- Données du jeu ----------
+const CREATURES = [
+  { name: "Chatomon",     sprite: "🐱", baseHp: 10 },
+  { name: "Oiseaumon",    sprite: "🐦", baseHp: 12 },
+  { name: "Renardmon",    sprite: "🦊", baseHp: 14 },
+  { name: "Crapaudmon",   sprite: "🐸", baseHp: 16 },
+  { name: "Papillonmon",  sprite: "🦋", baseHp: 18 },
+  { name: "Tortuemon",    sprite: "🐢", baseHp: 22 },
+  { name: "Lapinmon",     sprite: "🐰", baseHp: 20 },
+  { name: "Abeillemon",   sprite: "🐝", baseHp: 24 },
+  { name: "Pandamon",     sprite: "🐼", baseHp: 28 },
+  { name: "Lionmon",      sprite: "🦁", baseHp: 32 },
+  { name: "Aiglemon",     sprite: "🦅", baseHp: 36 },
+  { name: "Dragonmon",    sprite: "🐲", baseHp: 50 }
+];
+
+const ZONES = [
+  { name: "Zone 1 — Prairie des Additions",    maxLevel: 3  },
+  { name: "Zone 2 — Forêt des Soustractions",  maxLevel: 6  },
+  { name: "Zone 3 — Grotte des Multiplications", maxLevel: 9 },
+  { name: "Zone 4 — Sommet des Grands Calculs", maxLevel: 12 }
+];
+
+const ANSWER_TIME_MS = 6000;      // temps de base pour répondre
+const CRIT_TIME_MS   = 1500;      // sous ce délai -> chance de coup critique
+const BASE_DAMAGE    = 3;
+const PLAYER_HP      = 30;
+
+// ---------- État ----------
+let state = {
+  level: 1,
+  gold: 0,
+  playerHp: PLAYER_HP,
+  kills: 0,
+  streak: 0
+};
+
+let enemy = null;
+let currentQuestion = null;
+let questionStart = 0;
+let timerId = null;
+let awaitingAnswer = false;
+
+// ---------- DOM ----------
+const $ = id => document.getElementById(id);
+const enemySprite = $("enemy-sprite");
+const enemyName = $("enemy-name");
+const enemyHpBar = $("enemy-hp");
+const hpText = $("hp-text");
+const zoneName = $("zone-name");
+const statsEl = $("stats");
+const questionEl = $("question");
+const answerInput = $("answer-input");
+const timerBar = $("timer-bar-inner");
+const feedback = $("feedback");
+const logEl = $("log");
+const enemyArea = $("enemy-area");
+const victoryOverlay = $("victory-overlay");
+const gameoverOverlay = $("gameover-overlay");
+
+// ---------- Générateurs de calculs (niveau CP → CE1) ----------
+function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function genQuestion() {
+  const lvl = state.level;
+  const type = lvl <= 3 ? randInt(1, 2) : lvl <= 6 ? randInt(2, 3) : lvl <= 9 ? randInt(3, 4) : 4;
+  let a, b, ans, text;
+  switch (type) {
+    case 1: // additions simples
+      a = randInt(1, 9); b = randInt(1, 9);
+      ans = a + b; text = `${a} + ${b}`;
+      break;
+    case 2: // additions avec dizaines / doubles
+      a = randInt(2, 15); b = randInt(2, 15);
+      ans = a + b; text = `${a} + ${b}`;
+      break;
+    case 3: // soustractions
+      a = randInt(5, 20); b = randInt(1, a - 1);
+      ans = a - b; text = `${a} − ${b}`;
+      break;
+    case 4: { // petites multiplications (tables)
+      a = randInt(2, 5); b = randInt(2, 9);
+      ans = a * b; text = `${a} × ${b}`;
+      break;
+    }
+    default:
+      a = randInt(1, 9); b = randInt(1, 9);
+      ans = a + b; text = `${a} + ${b}`;
+  }
+  return { text, answer: ans };
+}
+
+// ---------- Ennemis ----------
+function spawnEnemy() {
+  const zoneIdx = Math.min(ZONES.length - 1, Math.floor((state.level - 1) / 3));
+  const pool = CREATURES.slice(zoneIdx * 3, zoneIdx * 3 + 3);
+  const c = pool[randInt(0, pool.length - 1)];
+  const hp = Math.round(c.baseHp * (1 + (state.level - 1) * 0.15));
+  enemy = { ...c, hp, maxHp: hp };
+  enemySprite.textContent = c.sprite;
+  enemySprite.classList.remove("hit");
+  enemyName.textContent = `${c.name} Lv.${state.level}`;
+  updateEnemyHp();
+  newQuestion();
+}
+
+function updateEnemyHp() {
+  const pct = Math.max(0, (enemy.hp / enemy.maxHp) * 100);
+  enemyHpBar.style.width = pct + "%";
+  enemyHpBar.style.background = pct > 50 ? "var(--hp-green)" : pct > 20 ? "var(--hp-yellow)" : "var(--hp-red)";
+  hpText.textContent = `${Math.max(0, Math.ceil(enemy.hp))} / ${enemy.maxHp} PV`;
+}
+
+// ---------- Combat ----------
+function newQuestion() {
+  currentQuestion = genQuestion();
+  questionEl.textContent = `${currentQuestion.text} = ?`;
+  answerInput.value = "";
+  answerInput.disabled = false;
+  answerInput.focus();
+  feedback.textContent = "";
+  feedback.className = "";
+  questionStart = performance.now();
+  awaitingAnswer = true;
+  clearInterval(timerId);
+  timerId = setInterval(tickTimer, 100);
+  tickTimer();
+}
+
+function tickTimer() {
+  const elapsed = performance.now() - questionStart;
+  const remaining = Math.max(0, ANSWER_TIME_MS - elapsed);
+  timerBar.style.width = (remaining / ANSWER_TIME_MS * 100) + "%";
+  timerBar.style.background = remaining > ANSWER_TIME_MS * 0.5 ? "var(--hp-green)"
+    : remaining > ANSWER_TIME_MS * 0.25 ? "var(--hp-yellow)" : "var(--hp-red)";
+  if (remaining <= 0 && awaitingAnswer) {
+    timeUp();
+  }
+}
+
+function submitAnswer() {
+  if (!awaitingAnswer) return;
+  const val = answerInput.value.trim();
+  if (val === "") return;
+  const num = Number(val);
+  const elapsed = performance.now() - questionStart;
+  clearInterval(timerId);
+  awaitingAnswer = false;
+  answerInput.disabled = true;
+
+  if (num === currentQuestion.answer) {
+    onCorrectAnswer(elapsed);
+  } else {
+    onWrongAnswer(num);
+  }
+}
+
+function onCorrectAnswer(elapsed) {
+  const speedRatio = Math.max(0, 1 - elapsed / ANSWER_TIME_MS);   // 1 = ultra rapide
+  let damage = Math.max(1, Math.round(BASE_DAMAGE * (0.5 + speedRatio * 1.5) + state.streak * 0.5));
+
+  let crit = false;
+  if (elapsed < CRIT_TIME_MS) {
+    crit = Math.random() < 0.35;
+    if (crit) damage = Math.round(damage * 2.5);
+  }
+
+  state.streak++;
+  enemy.hp -= damage;
+  addLog(`${crit ? "💥 CRITIQUE ! " : ""}Bonne réponse (${currentQuestion.answer}) → ${damage} dégâts !`);
+  showFeedback(crit ? `💥 COUP CRITIQUE ! ${damage} dégâts !` : `✅ Bien joué ! ${damage} dégâts`, crit ? "crit good" : "good");
+  enemySprite.classList.remove("hit");
+  void enemySprite.offsetWidth; // restart animation
+  enemySprite.classList.add("hit");
+  floatDamage(damage, crit);
+  updateEnemyHp();
+
+  if (enemy.hp <= 0) {
+    defeatEnemy();
+  } else {
+    setTimeout(newQuestion, 500);
+  }
+}
+
+function onWrongAnswer(given) {
+  state.streak = 0;
+  const dmgTaken = 4;
+  state.playerHp -= dmgTaken;
+  addLog(`❌ Mauvaise réponse (${given} au lieu de ${currentQuestion.answer}). Tu subis ${dmgTaken} dégâts !`);
+  showFeedback(`❌ Raté ! La réponse était ${currentQuestion.answer}. −${dmgTaken} PV`, "bad");
+  updateStats();
+  if (state.playerHp <= 0) {
+    gameOver();
+  } else {
+    setTimeout(newQuestion, 900);
+  }
+}
+
+function timeUp() {
+  clearInterval(timerId);
+  awaitingAnswer = false;
+  answerInput.disabled = true;
+  state.streak = 0;
+  const dmgTaken = 5;
+  state.playerHp -= dmgTaken;
+  addLog(`⏰ Trop lent ! La réponse était ${currentQuestion.answer}. −${dmgTaken} PV`);
+  showFeedback(`⏰ Trop tard ! C'était ${currentQuestion.answer}. −${dmgTaken} PV`, "bad");
+  updateStats();
+  if (state.playerHp <= 0) {
+    gameOver();
+  } else {
+    setTimeout(newQuestion, 900);
+  }
+}
+
+function defeatEnemy() {
+  awaitingAnswer = false;
+  clearInterval(timerId);
+  const gold = randInt(3, 7) + state.level;
+  state.gold += gold;
+  state.kills++;
+  addLog(`🎉 ${enemy.name} est vaincu ! +${gold} or.`);
+  $("victory-text").textContent = `${enemy.name} est vaincu ! Tu gagnes ${gold} pièces d'or.`;
+  victoryOverlay.classList.remove("hidden");
+  answerInput.disabled = true;
+}
+
+function nextEnemy() {
+  victoryOverlay.classList.add("hidden");
+  // Tous les 3 monstres vaincus : niveau supérieur + soin
+  if (state.kills % 3 === 0) {
+    state.level++;
+    state.playerHp = Math.min(PLAYER_HP, state.playerHp + 10);
+    const zoneIdx = Math.min(ZONES.length - 1, Math.floor((state.level - 1) / 3));
+    zoneName.textContent = ZONES[zoneIdx].name;
+    addLog(`⬆️ Niveau ${state.level} ! Tu récupères 10 PV.`);
+  }
+  updateStats();
+  spawnEnemy();
+}
+
+function gameOver() {
+  clearInterval(timerId);
+  awaitingAnswer = false;
+  answerInput.disabled = true;
+  gameoverOverlay.classList.remove("hidden");
+}
+
+function restart() {
+  gameoverOverlay.classList.add("hidden");
+  state.level = 1;
+  state.gold = 0;
+  state.playerHp = PLAYER_HP;
+  state.kills = 0;
+  state.streak = 0;
+  zoneName.textContent = ZONES[0].name;
+  updateStats();
+  addLog("--- Nouvelle partie ---");
+  spawnEnemy();
+}
+
+// ---------- UI helpers ----------
+function updateStats() {
+  statsEl.textContent = `Niveau ${state.level} · Or : ${state.gold} · PV : ${Math.max(0, state.playerHp)}/${PLAYER_HP}`;
+}
+
+function showFeedback(msg, cls) {
+  feedback.textContent = msg;
+  feedback.className = cls;
+}
+
+function addLog(msg) {
+  const div = document.createElement("div");
+  div.textContent = msg;
+  logEl.prepend(div);
+  while (logEl.children.length > 30) logEl.removeChild(logEl.lastChild);
+}
+
+function floatDamage(dmg, crit) {
+  const el = document.createElement("div");
+  el.className = "dmg-float";
+  el.textContent = `-${dmg}${crit ? " 💥" : ""}`;
+  el.style.left = (40 + Math.random() * 20) + "%";
+  el.style.color = crit ? "var(--crit)" : "#fff";
+  enemyArea.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+  if (crit) {
+    const flash = document.createElement("div");
+    flash.className = "flash-crit";
+    enemyArea.appendChild(flash);
+    setTimeout(() => flash.remove(), 400);
+  }
+}
+
+// ---------- Événements ----------
+$("btn-attack").addEventListener("click", submitAnswer);
+answerInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") submitAnswer();
+});
+$("btn-flee").addEventListener("click", () => {
+  if (!awaitingAnswer) return;
+  clearInterval(timerId);
+  awaitingAnswer = false;
+  addLog(`🏃 Tu fuis ${enemy.name}...`);
+  spawnEnemy();
+});
+$("btn-continue").addEventListener("click", nextEnemy);
+$("btn-restart").addEventListener("click", restart);
+
+// ---------- Init ----------
+updateStats();
+addLog("--- Bienvenue dans Calculomon ! ---");
+spawnEnemy();
+</script>
+</body>
+</html>
