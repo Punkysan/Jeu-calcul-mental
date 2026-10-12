@@ -13,7 +13,7 @@ Plus tu réponds vite, plus ton attaque est puissante — et en dessous de 1,5 s
    - Réponse instantanée → dégâts max
    - Réponse lente → dégâts faibles
    - **< 1,5 s** → chance de coup critique 💥
-5. Une mauvaise réponse (−4 PV) ou un dépassement des 6 secondes (−5 PV) → tu perds des PV.
+5. Ton Calculomon a **30 PV**, affichés en permanence sous l'ennemi. Une mauvaise réponse (−4 PV) ou un dépassement des 6 secondes (−5 PV) → il perd des PV, et **à 0 PV le joueur perd** (écran de défaite, retour au choix des zones).
 6. Après chaque victoire, tu récupères 3 PV, et les créatures deviennent un peu plus fortes.
 7. Le bouton **🗺️ Changer de zone** permet de retourner au choix des zones à tout moment.
 

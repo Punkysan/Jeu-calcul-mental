@@ -54,7 +54,7 @@
     font-weight: bold;
   }
   #stats { font-size: 0.9rem; }
-  #enemy-area {
+  #enemy-area, #player-area {
     background: #5d5f8d;
     border: 3px solid #000;
     border-radius: 10px;
@@ -63,14 +63,20 @@
     position: relative;
     overflow: hidden;
   }
-  #enemy-sprite { font-size: 4rem; line-height: 1; transition: transform .1s; }
-  #enemy-sprite.hit { animation: shake .3s; }
+  #player-area { background: #4a6fdb; }
+  #enemy-sprite, #player-sprite { font-size: 4rem; line-height: 1; transition: transform .1s; }
+  #enemy-sprite.hit, #player-sprite.hit { animation: shake .3s; }
   @keyframes shake {
     0%,100% { transform: translateX(0); }
     25% { transform: translateX(-10px) rotate(-5deg); }
     75% { transform: translateX(10px) rotate(5deg); }
   }
-  #enemy-name { font-size: 1.1rem; margin-top: 6px; }
+  #enemy-name, #player-name { font-size: 1.1rem; margin-top: 6px; }
+  .hp-bar-outer.small { height: 10px; margin-top: 4px; }
+  .hp-text-small { font-size: 0.8rem; margin-top: 3px; }
+  .dmg-float-player {
+    color: var(--hp-red) !important;
+  }
   .hp-bar-outer {
     width: 100%;
     height: 16px;
@@ -241,6 +247,13 @@
     <div id="hp-text">— / — PV</div>
   </div>
 
+  <div id="player-area">
+    <div id="player-sprite">🧑‍🎤</div>
+    <div id="player-name">Ton Calculomon</div>
+    <div class="hp-bar-outer small"><div class="hp-bar-inner" id="player-hp"></div></div>
+    <div class="hp-text-small" id="player-hp-text">30 / 30 PV</div>
+  </div>
+
   <div id="battle-area">
     <div id="question">2 + 3 = ?</div>
     <input id="answer-input" type="number" autocomplete="off" placeholder="Ta réponse...">
@@ -364,6 +377,10 @@ const timerBar = $("timer-bar-inner");
 const feedback = $("feedback");
 const logEl = $("log");
 const enemyArea = $("enemy-area");
+const playerArea = $("player-area");
+const playerSprite = $("player-sprite");
+const playerHpBar = $("player-hp");
+const playerHpText = $("player-hp-text");
 const zoneOverlay = $("zone-overlay");
 const victoryOverlay = $("victory-overlay");
 const gameoverOverlay = $("gameover-overlay");
@@ -462,6 +479,25 @@ function updateEnemyHp() {
   hpText.textContent = `${Math.max(0, Math.ceil(enemy.hp))} / ${enemy.maxHp} PV`;
 }
 
+function updatePlayerHp() {
+  const pct = Math.max(0, (state.playerHp / PLAYER_HP) * 100);
+  playerHpBar.style.width = pct + "%";
+  playerHpBar.style.background = pct > 50 ? "var(--hp-green)" : pct > 20 ? "var(--hp-yellow)" : "var(--hp-red)";
+  playerHpText.textContent = `${Math.max(0, state.playerHp)} / ${PLAYER_HP} PV`;
+}
+
+function playerHitAnimation(dmg) {
+  playerSprite.classList.remove("hit");
+  void playerSprite.offsetWidth;
+  playerSprite.classList.add("hit");
+  const el = document.createElement("div");
+  el.className = "dmg-float dmg-float-player";
+  el.textContent = `-${dmg}`;
+  el.style.left = (40 + Math.random() * 20) + "%";
+  playerArea.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+
 // ---------- Combat ----------
 function newQuestion() {
   currentQuestion = genQuestion();
@@ -536,8 +572,10 @@ function onCorrectAnswer(elapsed) {
 function onWrongAnswer(given) {
   state.streak = 0;
   state.playerHp -= WRONG_PENALTY;
-  addLog(`❌ Mauvaise réponse (${given} au lieu de ${currentQuestion.answer}). Tu perds ${WRONG_PENALTY} PV !`);
+  addLog(`❌ Mauvaise réponse (${given} au lieu de ${currentQuestion.answer}). Ton Calculomon perd ${WRONG_PENALTY} PV !`);
   showFeedback(`❌ Raté ! La réponse était ${currentQuestion.answer}. −${WRONG_PENALTY} PV`, "bad");
+  playerHitAnimation(WRONG_PENALTY);
+  updatePlayerHp();
   updateStats();
   if (state.playerHp <= 0) {
     gameOver();
@@ -552,8 +590,10 @@ function timeUp() {
   answerInput.disabled = true;
   state.streak = 0;
   state.playerHp -= TIMEOUT_PENALTY;
-  addLog(`⏰ Trop lent ! La réponse était ${currentQuestion.answer}. −${TIMEOUT_PENALTY} PV`);
+  addLog(`⏰ Trop lent ! La réponse était ${currentQuestion.answer}. Ton Calculomon perd ${TIMEOUT_PENALTY} PV !`);
   showFeedback(`⏰ Trop tard ! C'était ${currentQuestion.answer}. −${TIMEOUT_PENALTY} PV`, "bad");
+  playerHitAnimation(TIMEOUT_PENALTY);
+  updatePlayerHp();
   updateStats();
   if (state.playerHp <= 0) {
     gameOver();
@@ -578,6 +618,7 @@ function nextEnemy() {
   victoryOverlay.classList.add("hidden");
   // Soin progressif après chaque victoire (limité aux PV max)
   state.playerHp = Math.min(PLAYER_HP, state.playerHp + 3);
+  updatePlayerHp();
   updateStats();
   spawnEnemy();
 }
@@ -586,6 +627,7 @@ function gameOver() {
   clearInterval(timerId);
   awaitingAnswer = false;
   answerInput.disabled = true;
+  updatePlayerHp();
   gameoverOverlay.classList.remove("hidden");
 }
 
@@ -594,6 +636,7 @@ function restart() {
   state.playerHp = PLAYER_HP;
   state.streak = 0;
   state.zoneKills = 0;
+  updatePlayerHp();
   updateStats();
   addLog("--- Nouvelle partie ---");
   openZonePicker();
@@ -650,6 +693,7 @@ $("btn-restart").addEventListener("click", restart);
 
 // ---------- Init ----------
 buildZoneButtons();
+updatePlayerHp();
 updateStats();
 addLog("--- Bienvenue dans Calculomon ! ---");
 openZonePicker();
