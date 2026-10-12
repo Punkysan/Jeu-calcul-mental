@@ -55,21 +55,46 @@
   }
   #stats { font-size: 0.9rem; }
   /* ---- Scène de combat façon Pokémon GBA / Pokéclicker ---- */
+  /* ---- Scène de combat piscine façon Pokéclicker ---- */
   #battle-scene {
     position: relative;
     height: 240px;
     background:
-      linear-gradient(#78c850 0%, #78c850 62%, #90d068 62%, #90d068 100%);
+      linear-gradient(#3fa945 0%, #3fa945 14%,
+                      #2f8fd6 14%, #2f8fd6 45%,
+                      #4fc3f7 45%, #4fc3f7 100%);
     border: 3px solid #000;
     border-radius: 8px;
     overflow: hidden;
     image-rendering: pixelated;
   }
+  .pool-edge {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 14%;
+    background: repeating-linear-gradient(90deg,
+      #3fa945 0px, #3fa945 18px, #2d8a35 18px, #2d8a35 36px);
+    border-bottom: 3px solid #fff;
+  }
+  .water-wave {
+    position: absolute;
+    left: 0; right: 0;
+    height: 8px;
+    background: rgba(255,255,255,.35);
+    border-radius: 50%;
+    animation: wave 3s ease-in-out infinite;
+  }
+  @keyframes wave {
+    0%,100% { transform: translateX(-8px) translateY(0); }
+    50% { transform: translateX(8px) translateY(3px); }
+  }
+  #wave-1 { top: 16%; }
+  #wave-2 { top: 55%; animation-delay: 1.2s; }
   .platform {
     position: absolute;
     width: 130px; height: 26px;
-    background: #58a038;
-    border: 2px solid #2d5a14;
+    background: rgba(255,255,255,.25);
+    border: 2px solid rgba(255,255,255,.5);
     border-radius: 50%;
   }
   #platform-enemy { top: 78px; left: 18px; }
@@ -105,6 +130,23 @@
     border-radius: 6px;
     padding: 7px 9px;
     z-index: 3;
+  }
+  #enemy-pool-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 22px;
+    background: var(--hp-red);
+    border-top: 3px solid #000;
+    z-index: 3;
+  }
+  #enemy-pool-text {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+    text-align: center;
+    line-height: 22px;
+    letter-spacing: 1px;
   }
   #enemy-area { top: 12px; right: 12px; }
   #player-area { bottom: 12px; left: 12px; }
@@ -338,6 +380,9 @@
   </div>
 
   <div id="battle-scene">
+    <div class="pool-edge"></div>
+    <div class="water-wave" id="wave-1"></div>
+    <div class="water-wave" id="wave-2"></div>
     <div class="platform" id="platform-enemy"></div>
     <div class="platform" id="platform-player"></div>
     <div id="enemy-sprite">🐱</div>
@@ -352,6 +397,7 @@
       <div class="hp-bar-outer small"><div class="hp-bar-inner" id="player-hp"></div></div>
       <div class="hp-text-small" id="player-hp-text">30 / 30 PV</div>
     </div>
+    <div id="enemy-pool-bar"><span id="enemy-pool-text">— / —</span></div>
   </div>
 
   <div id="battle-area">
@@ -596,6 +642,7 @@ function updateEnemyHp() {
   enemyHpBar.style.width = pct + "%";
   enemyHpBar.style.background = pct > 50 ? "var(--hp-green)" : pct > 20 ? "var(--hp-yellow)" : "var(--hp-red)";
   hpText.textContent = `${Math.max(0, Math.ceil(enemy.hp))} / ${enemy.maxHp} PV`;
+  $("enemy-pool-text").textContent = `${Math.max(0, Math.ceil(enemy.hp))} / ${enemy.maxHp}`;
 }
 
 function updatePlayerHp() {
