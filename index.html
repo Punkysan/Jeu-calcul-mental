@@ -211,6 +211,52 @@
     font-size: 0.95rem;
     margin: 8px 0 6px;
   }
+  #map-screen {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    position: relative;
+    padding: 15px 5px;
+  }
+  .map-node {
+    background: #3b5dc9;
+    border: 3px solid #000;
+    border-radius: 10px;
+    padding: 10px 4px;
+    text-align: center;
+    cursor: pointer;
+    font-family: inherit;
+    color: #fff;
+    font-weight: bold;
+    font-size: 0.85rem;
+    position: relative;
+    transition: transform .15s;
+  }
+  .map-node:hover { transform: scale(1.07); background: #4a6fdb; }
+  .map-node.special { background: #7a4fbf; }
+  .map-node.special:hover { background: #8d5fd0; }
+  .map-node.current {
+    outline: 3px solid var(--accent);
+    background: #2f8f2f;
+  }
+  .map-node.current:hover { background: #3aa53a; }
+  .map-node .node-sprite { font-size: 1.8rem; display: block; }
+  .map-node .node-avatar {
+    position: absolute;
+    top: -14px; right: -8px;
+    font-size: 1.3rem;
+    animation: bounce 1s infinite;
+    filter: drop-shadow(1px 1px 0 #000);
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  #map-hint {
+    font-size: 0.85rem;
+    color: #cfd8ff;
+    margin-top: 5px;
+  }
   .flash-crit {
     position: absolute; inset: 0;
     background: rgba(255,159,67,.35);
@@ -270,12 +316,10 @@
 
 <div class="overlay" id="zone-overlay">
   <div class="overlay-box">
-    <h2>🗺️ Choisis ta zone d'entraînement</h2>
-    <p>Sélectionne la table d'addition à travailler, ou une zone spéciale !</p>
-    <div class="zone-section-title">➕ Tables d'addition</div>
-    <div class="zone-grid" id="zone-tables"></div>
-    <div class="zone-section-title">⭐ Zones spéciales</div>
-    <div class="zone-grid" id="zone-specials"></div>
+    <h2>🗺️ Carte du monde de Calculomon</h2>
+    <p>Déplace-toi vers un lieu pour t'entraîner à sa table !</p>
+    <div id="map-screen"></div>
+    <p id="map-hint">Le drapeau 🚩 indique ta position actuelle.</p>
   </div>
 </div>
 
@@ -321,6 +365,13 @@ const CREATURES = [
 //  - sub    : soustractions
 //  - mult   : petites multiplications
 const ZONES = [];
+
+const MAP_LAYOUT = [
+  { id: "table1", x: 0, y: 0 }, { id: "table2", x: 1, y: 0 }, { id: "table3", x: 2, y: 0 }, { id: "comp10", x: 3, y: 0 },
+  { id: "table4", x: 0, y: 1 }, { id: "table5", x: 1, y: 1 }, { id: "table6", x: 2, y: 1 }, { id: "double", x: 3, y: 1 },
+  { id: "table7", x: 0, y: 2 }, { id: "table8", x: 1, y: 2 }, { id: "table9", x: 2, y: 2 }, { id: "sub",    x: 3, y: 2 },
+  { id: "mult",   x: 1, y: 3 }
+];
 
 for (let n = 1; n <= 9; n++) {
   ZONES.push({
@@ -423,18 +474,32 @@ function genQuestion() {
 }
 
 // ---------- Zones ----------
+const PLACE_SPRITES = {
+  double: "🏔️",
+  comp10: "💧",
+  sub: "🌳",
+  mult: "🕳️"
+};
+
 function buildZoneButtons() {
-  const tablesGrid = $("zone-tables");
-  const specialsGrid = $("zone-specials");
-  tablesGrid.innerHTML = "";
-  specialsGrid.innerHTML = "";
-  for (const zone of ZONES) {
+  const map = $("map-screen");
+  map.innerHTML = "";
+  map.style.gridTemplateAreas = "\"a b c d\" \"e f g h\" \"i j k l\" \". m . .\"";
+  const cols = 4;
+  for (const spot of MAP_LAYOUT) {
+    const zone = ZONES.find(z => z.id === spot.id);
     const btn = document.createElement("button");
-    btn.className = "zone-btn" + (zone.special ? " special" : "");
-    btn.textContent = zone.label;
+    btn.className = "map-node" + (zone.special ? " special" : "") + (state.currentZone && state.currentZone.id === zone.id ? " current" : "");
     btn.title = zone.name;
+    const sprite = PLACE_SPRITES[zone.id] || (zone.type === "table" ? "➕" : "❓");
+    btn.innerHTML = `<span class="node-sprite">${sprite}</span>${zone.label}`;
+    if (state.currentZone && state.currentZone.id === zone.id) {
+      btn.innerHTML += `<span class="node-avatar">🚩</span>`;
+    }
+    btn.style.gridColumn = (spot.x + 1);
+    btn.style.gridRow = (spot.y + 1);
     btn.addEventListener("click", () => selectZone(zone));
-    (zone.special ? specialsGrid : tablesGrid).appendChild(btn);
+    map.appendChild(btn);
   }
 }
 
@@ -443,10 +508,10 @@ function selectZone(zone) {
   state.zoneKills = 0;
   state.streak = 0;
   zoneName.textContent = zone.name;
+  addLog(`🚶 Tu te déplaces vers : ${zone.name}`);
   zoneOverlay.classList.add("hidden");
   victoryOverlay.classList.add("hidden");
   gameoverOverlay.classList.add("hidden");
-  addLog(`🗺️ Tu entres dans : ${zone.name}`);
   spawnEnemy();
 }
 
@@ -454,6 +519,7 @@ function openZonePicker() {
   clearInterval(timerId);
   awaitingAnswer = false;
   answerInput.disabled = true;
+  buildZoneButtons();
   zoneOverlay.classList.remove("hidden");
 }
 

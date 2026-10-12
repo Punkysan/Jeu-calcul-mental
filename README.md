@@ -17,9 +17,9 @@ Plus tu réponds vite, plus ton attaque est puissante — et en dessous de 1,5 s
 6. Après chaque victoire, tu récupères 3 PV, et les créatures deviennent un peu plus fortes.
 7. Le bouton **🗺️ Changer de zone** permet de retourner au choix des zones à tout moment.
 
-## 🗺️ Zones
+## 🗺️ Carte du monde
 
-Au démarrage (et via le bouton *Changer de zone*), le joueur choisit sa zone d'entraînement :
+Au démarrage (et via le bouton *Changer de zone*), le joueur se déplace sur une **carte du monde** où chaque lieu est une zone d'entraînement. Un drapeau 🚩 marque ta position actuelle :
 
 ### ➕ Tables d'addition (9 zones)
 | Zone | Calculs |
