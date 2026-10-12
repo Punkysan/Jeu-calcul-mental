@@ -45,7 +45,7 @@
     flex-direction: column;
     gap: 12px;
   }
-  .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
   .zone-badge {
     background: var(--panel-light);
     padding: 4px 10px;
@@ -163,6 +163,7 @@
     background: rgba(0,0,0,.75);
     display: flex; align-items: center; justify-content: center;
     z-index: 10;
+    padding: 10px;
   }
   .overlay.hidden { display: none; }
   .overlay-box {
@@ -171,10 +172,39 @@
     border-radius: 12px;
     padding: 25px;
     text-align: center;
-    max-width: 420px;
+    max-width: 520px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
   }
   .overlay-box h2 { color: var(--accent); margin-bottom: 10px; }
   .overlay-box p { margin-bottom: 15px; line-height: 1.5; }
+  .zone-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+  .zone-btn {
+    background: #3b5dc9;
+    color: #fff;
+    border: 3px solid #000;
+    border-radius: 8px;
+    padding: 10px 6px;
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  .zone-btn:hover { background: #4a6fdb; transform: scale(1.05); }
+  .zone-btn.special { background: #7a4fbf; }
+  .zone-btn.special:hover { background: #8d5fd0; }
+  .zone-section-title {
+    text-align: left;
+    color: var(--accent);
+    font-size: 0.95rem;
+    margin: 8px 0 6px;
+  }
   .flash-crit {
     position: absolute; inset: 0;
     background: rgba(255,159,67,.35);
@@ -200,15 +230,15 @@
 <h1>⚡ CALCULOMON ⚡</h1>
 <div id="game">
   <div class="row">
-    <span class="zone-badge" id="zone-name">Zone 1 — Prairie des Additions</span>
-    <span id="stats">Niveau 1 · Or : 0</span>
+    <span class="zone-badge" id="zone-name">Choisis ta zone !</span>
+    <span id="stats">Or : 0 · PV : 30/30</span>
   </div>
 
   <div id="enemy-area">
     <div id="enemy-sprite">🐱</div>
-    <div id="enemy-name">Chatomon Lv.1</div>
+    <div id="enemy-name">Chatomon</div>
     <div class="hp-bar-outer"><div class="hp-bar-inner" id="enemy-hp"></div></div>
-    <div id="hp-text">10 / 10 PV</div>
+    <div id="hp-text">— / — PV</div>
   </div>
 
   <div id="battle-area">
@@ -220,7 +250,19 @@
     <div class="row">
       <button class="btn" id="btn-attack">Attaquer !</button>
       <button class="btn" id="btn-flee">Fuir</button>
+      <button class="btn" id="btn-change-zone">🗺️ Changer de zone</button>
     </div>
+  </div>
+</div>
+
+<div class="overlay" id="zone-overlay">
+  <div class="overlay-box">
+    <h2>🗺️ Choisis ta zone d'entraînement</h2>
+    <p>Sélectionne la table d'addition à travailler, ou une zone spéciale !</p>
+    <div class="zone-section-title">➕ Tables d'addition</div>
+    <div class="zone-grid" id="zone-tables"></div>
+    <div class="zone-section-title">⭐ Zones spéciales</div>
+    <div class="zone-grid" id="zone-specials"></div>
   </div>
 </div>
 
@@ -235,7 +277,7 @@
 <div class="overlay hidden" id="gameover-overlay">
   <div class="overlay-box">
     <h2>💤 Défaite...</h2>
-    <p>Ton Calculomon est K.O. ! Retour à la Prairie.</p>
+    <p>Ton Calculomon est K.O. ! Retour au choix des zones.</p>
     <button class="btn" id="btn-restart">Réessayer</button>
   </div>
 </div>
@@ -250,8 +292,8 @@ const CREATURES = [
   { name: "Renardmon",    sprite: "🦊", baseHp: 14 },
   { name: "Crapaudmon",   sprite: "🐸", baseHp: 16 },
   { name: "Papillonmon",  sprite: "🦋", baseHp: 18 },
-  { name: "Tortuemon",    sprite: "🐢", baseHp: 22 },
   { name: "Lapinmon",     sprite: "🐰", baseHp: 20 },
+  { name: "Tortuemon",    sprite: "🐢", baseHp: 22 },
   { name: "Abeillemon",   sprite: "🐝", baseHp: 24 },
   { name: "Pandamon",     sprite: "🐼", baseHp: 28 },
   { name: "Lionmon",      sprite: "🦁", baseHp: 32 },
@@ -259,25 +301,47 @@ const CREATURES = [
   { name: "Dragonmon",    sprite: "🐲", baseHp: 50 }
 ];
 
-const ZONES = [
-  { name: "Zone 1 — Prairie des Additions",    maxLevel: 3  },
-  { name: "Zone 2 — Forêt des Soustractions",  maxLevel: 6  },
-  { name: "Zone 3 — Grotte des Multiplications", maxLevel: 9 },
-  { name: "Zone 4 — Sommet des Grands Calculs", maxLevel: 12 }
-];
+// Types de zones :
+//  - table  : table d'addition de n (n + 1 ... n + 9)
+//  - double : les doubles (a + a)
+//  - comp10 : les compléments à 10 (a + ? = 10)
+//  - sub    : soustractions
+//  - mult   : petites multiplications
+const ZONES = [];
+
+for (let n = 1; n <= 9; n++) {
+  ZONES.push({
+    id: "table" + n,
+    name: "Table de +" + n,
+    label: "+" + n,
+    type: "table",
+    n,
+    difficulty: n,
+    special: false
+  });
+}
+
+ZONES.push(
+  { id: "double", name: "Vallée des Doubles",       label: "Doubles 2+2...",  type: "double", difficulty: 5,  special: true },
+  { id: "comp10", name: "Lac des Compléments à 10", label: "? + ? = 10",      type: "comp10", difficulty: 6,  special: true },
+  { id: "sub",    name: "Forêt des Soustractions",  label: "− Soustractions", type: "sub",    difficulty: 7,  special: true },
+  { id: "mult",   name: "Grotte des Multiplications", label: "× Tables",      type: "mult",   difficulty: 9,  special: true }
+);
 
 const ANSWER_TIME_MS = 6000;      // temps de base pour répondre
 const CRIT_TIME_MS   = 1500;      // sous ce délai -> chance de coup critique
 const BASE_DAMAGE    = 3;
 const PLAYER_HP      = 30;
+const WRONG_PENALTY  = 4;         // PV perdus si mauvaise réponse
+const TIMEOUT_PENALTY = 5;        // PV perdus si temps écoulé
 
 // ---------- État ----------
 let state = {
-  level: 1,
   gold: 0,
   playerHp: PLAYER_HP,
-  kills: 0,
-  streak: 0
+  streak: 0,
+  zoneKills: 0,   // victoires dans la zone en cours
+  currentZone: null
 };
 
 let enemy = null;
@@ -300,36 +364,40 @@ const timerBar = $("timer-bar-inner");
 const feedback = $("feedback");
 const logEl = $("log");
 const enemyArea = $("enemy-area");
+const zoneOverlay = $("zone-overlay");
 const victoryOverlay = $("victory-overlay");
 const gameoverOverlay = $("gameover-overlay");
 
-// ---------- Générateurs de calculs (niveau CP → CE1) ----------
+// ---------- Générateurs de calculs (niveau CP) ----------
 function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function genQuestion() {
-  const lvl = state.level;
-  const type = lvl <= 3 ? randInt(1, 2) : lvl <= 6 ? randInt(2, 3) : lvl <= 9 ? randInt(3, 4) : 4;
+  const zone = state.currentZone;
   let a, b, ans, text;
-  switch (type) {
-    case 1: // additions simples
-      a = randInt(1, 9); b = randInt(1, 9);
+  switch (zone.type) {
+    case "table": // table d'addition de n : n + b
+      a = zone.n;
+      b = randInt(1, 9);
       ans = a + b; text = `${a} + ${b}`;
       break;
-    case 2: // additions avec dizaines / doubles
-      a = randInt(2, 15); b = randInt(2, 15);
-      ans = a + b; text = `${a} + ${b}`;
+    case "double": // les doubles : a + a
+      a = randInt(1, 10);
+      ans = a + a; text = `${a} + ${a}`;
       break;
-    case 3: // soustractions
+    case "comp10": // complément à 10 : a + ? = 10
+      a = randInt(1, 9);
+      ans = 10 - a; text = `${a} + ? = 10`;
+      break;
+    case "sub": // soustractions
       a = randInt(5, 20); b = randInt(1, a - 1);
       ans = a - b; text = `${a} − ${b}`;
       break;
-    case 4: { // petites multiplications (tables)
+    case "mult": // petites multiplications
       a = randInt(2, 5); b = randInt(2, 9);
       ans = a * b; text = `${a} × ${b}`;
       break;
-    }
     default:
       a = randInt(1, 9); b = randInt(1, 9);
       ans = a + b; text = `${a} + ${b}`;
@@ -337,16 +405,52 @@ function genQuestion() {
   return { text, answer: ans };
 }
 
+// ---------- Zones ----------
+function buildZoneButtons() {
+  const tablesGrid = $("zone-tables");
+  const specialsGrid = $("zone-specials");
+  tablesGrid.innerHTML = "";
+  specialsGrid.innerHTML = "";
+  for (const zone of ZONES) {
+    const btn = document.createElement("button");
+    btn.className = "zone-btn" + (zone.special ? " special" : "");
+    btn.textContent = zone.label;
+    btn.title = zone.name;
+    btn.addEventListener("click", () => selectZone(zone));
+    (zone.special ? specialsGrid : tablesGrid).appendChild(btn);
+  }
+}
+
+function selectZone(zone) {
+  state.currentZone = zone;
+  state.zoneKills = 0;
+  state.streak = 0;
+  zoneName.textContent = zone.name;
+  zoneOverlay.classList.add("hidden");
+  victoryOverlay.classList.add("hidden");
+  gameoverOverlay.classList.add("hidden");
+  addLog(`🗺️ Tu entres dans : ${zone.name}`);
+  spawnEnemy();
+}
+
+function openZonePicker() {
+  clearInterval(timerId);
+  awaitingAnswer = false;
+  answerInput.disabled = true;
+  zoneOverlay.classList.remove("hidden");
+}
+
 // ---------- Ennemis ----------
 function spawnEnemy() {
-  const zoneIdx = Math.min(ZONES.length - 1, Math.floor((state.level - 1) / 3));
-  const pool = CREATURES.slice(zoneIdx * 3, zoneIdx * 3 + 3);
-  const c = pool[randInt(0, pool.length - 1)];
-  const hp = Math.round(c.baseHp * (1 + (state.level - 1) * 0.15));
+  const zone = state.currentZone;
+  // Plus la zone est difficile, plus les créatures sont fortes ; +5% PV par victoire dans la zone
+  const tier = Math.min(CREATURES.length - 1, Math.floor((zone.difficulty - 1) / 1.5) + randInt(0, 1));
+  const c = CREATURES[Math.min(CREATURES.length - 1, tier)];
+  const hp = Math.round(c.baseHp * (1 + state.zoneKills * 0.1));
   enemy = { ...c, hp, maxHp: hp };
   enemySprite.textContent = c.sprite;
   enemySprite.classList.remove("hit");
-  enemyName.textContent = `${c.name} Lv.${state.level}`;
+  enemyName.textContent = `${c.name} (${zone.name})`;
   updateEnemyHp();
   newQuestion();
 }
@@ -361,7 +465,7 @@ function updateEnemyHp() {
 // ---------- Combat ----------
 function newQuestion() {
   currentQuestion = genQuestion();
-  questionEl.textContent = `${currentQuestion.text} = ?`;
+  questionEl.textContent = currentQuestion.text.includes("?") ? currentQuestion.text : `${currentQuestion.text} = ?`;
   answerInput.value = "";
   answerInput.disabled = false;
   answerInput.focus();
@@ -431,10 +535,9 @@ function onCorrectAnswer(elapsed) {
 
 function onWrongAnswer(given) {
   state.streak = 0;
-  const dmgTaken = 4;
-  state.playerHp -= dmgTaken;
-  addLog(`❌ Mauvaise réponse (${given} au lieu de ${currentQuestion.answer}). Tu subis ${dmgTaken} dégâts !`);
-  showFeedback(`❌ Raté ! La réponse était ${currentQuestion.answer}. −${dmgTaken} PV`, "bad");
+  state.playerHp -= WRONG_PENALTY;
+  addLog(`❌ Mauvaise réponse (${given} au lieu de ${currentQuestion.answer}). Tu perds ${WRONG_PENALTY} PV !`);
+  showFeedback(`❌ Raté ! La réponse était ${currentQuestion.answer}. −${WRONG_PENALTY} PV`, "bad");
   updateStats();
   if (state.playerHp <= 0) {
     gameOver();
@@ -448,10 +551,9 @@ function timeUp() {
   awaitingAnswer = false;
   answerInput.disabled = true;
   state.streak = 0;
-  const dmgTaken = 5;
-  state.playerHp -= dmgTaken;
-  addLog(`⏰ Trop lent ! La réponse était ${currentQuestion.answer}. −${dmgTaken} PV`);
-  showFeedback(`⏰ Trop tard ! C'était ${currentQuestion.answer}. −${dmgTaken} PV`, "bad");
+  state.playerHp -= TIMEOUT_PENALTY;
+  addLog(`⏰ Trop lent ! La réponse était ${currentQuestion.answer}. −${TIMEOUT_PENALTY} PV`);
+  showFeedback(`⏰ Trop tard ! C'était ${currentQuestion.answer}. −${TIMEOUT_PENALTY} PV`, "bad");
   updateStats();
   if (state.playerHp <= 0) {
     gameOver();
@@ -463,9 +565,9 @@ function timeUp() {
 function defeatEnemy() {
   awaitingAnswer = false;
   clearInterval(timerId);
-  const gold = randInt(3, 7) + state.level;
+  const gold = randInt(3, 7) + state.currentZone.difficulty;
   state.gold += gold;
-  state.kills++;
+  state.zoneKills++;
   addLog(`🎉 ${enemy.name} est vaincu ! +${gold} or.`);
   $("victory-text").textContent = `${enemy.name} est vaincu ! Tu gagnes ${gold} pièces d'or.`;
   victoryOverlay.classList.remove("hidden");
@@ -474,14 +576,8 @@ function defeatEnemy() {
 
 function nextEnemy() {
   victoryOverlay.classList.add("hidden");
-  // Tous les 3 monstres vaincus : niveau supérieur + soin
-  if (state.kills % 3 === 0) {
-    state.level++;
-    state.playerHp = Math.min(PLAYER_HP, state.playerHp + 10);
-    const zoneIdx = Math.min(ZONES.length - 1, Math.floor((state.level - 1) / 3));
-    zoneName.textContent = ZONES[zoneIdx].name;
-    addLog(`⬆️ Niveau ${state.level} ! Tu récupères 10 PV.`);
-  }
+  // Soin progressif après chaque victoire (limité aux PV max)
+  state.playerHp = Math.min(PLAYER_HP, state.playerHp + 3);
   updateStats();
   spawnEnemy();
 }
@@ -494,21 +590,18 @@ function gameOver() {
 }
 
 function restart() {
-  gameoverOverlay.classList.add("hidden");
-  state.level = 1;
   state.gold = 0;
   state.playerHp = PLAYER_HP;
-  state.kills = 0;
   state.streak = 0;
-  zoneName.textContent = ZONES[0].name;
+  state.zoneKills = 0;
   updateStats();
   addLog("--- Nouvelle partie ---");
-  spawnEnemy();
+  openZonePicker();
 }
 
 // ---------- UI helpers ----------
 function updateStats() {
-  statsEl.textContent = `Niveau ${state.level} · Or : ${state.gold} · PV : ${Math.max(0, state.playerHp)}/${PLAYER_HP}`;
+  statsEl.textContent = `Or : ${state.gold} · PV : ${Math.max(0, state.playerHp)}/${PLAYER_HP}`;
 }
 
 function showFeedback(msg, cls) {
@@ -551,13 +644,15 @@ $("btn-flee").addEventListener("click", () => {
   addLog(`🏃 Tu fuis ${enemy.name}...`);
   spawnEnemy();
 });
+$("btn-change-zone").addEventListener("click", openZonePicker);
 $("btn-continue").addEventListener("click", nextEnemy);
 $("btn-restart").addEventListener("click", restart);
 
 // ---------- Init ----------
+buildZoneButtons();
 updateStats();
 addLog("--- Bienvenue dans Calculomon ! ---");
-spawnEnemy();
+openZonePicker();
 </script>
 </body>
 </html>

@@ -13,17 +13,31 @@ Plus tu réponds vite, plus ton attaque est puissante — et en dessous de 1,5 s
    - Réponse instantanée → dégâts max
    - Réponse lente → dégâts faibles
    - **< 1,5 s** → chance de coup critique 💥
-5. Une mauvaise réponse ou un dépassement des 6 secondes → tu perds des PV.
-6. Tous les 3 monstres vaincus, tu montes de niveau et récupères des PV.
+5. Une mauvaise réponse (−4 PV) ou un dépassement des 6 secondes (−5 PV) → tu perds des PV.
+6. Après chaque victoire, tu récupères 3 PV, et les créatures deviennent un peu plus fortes.
+7. Le bouton **🗺️ Changer de zone** permet de retourner au choix des zones à tout moment.
 
 ## 🗺️ Zones
 
+Au démarrage (et via le bouton *Changer de zone*), le joueur choisit sa zone d'entraînement :
+
+### ➕ Tables d'addition (9 zones)
 | Zone | Calculs |
 |------|----------|
-| Prairie des Additions | additions simples (1–9) |
-| Forêt des Soustractions | additions jusqu'à 15, soustractions |
-| Grotte des Multiplications | soustractions jusqu'à 20, petites tables |
-| Sommet des Grands Calculs | tables de multiplication (2–5 × 2–9) |
+| Table de +1 | 1 + 1 → 1 + 9 |
+| Table de +2 | 2 + 1 → 2 + 9 |
+| ... | ... |
+| Table de +9 | 9 + 1 → 9 + 9 |
+
+### ⭐ Zones spéciales
+| Zone | Calculs |
+|------|----------|
+| Vallée des Doubles | les doubles (a + a, jusqu'à 10 + 10) |
+| Lac des Compléments à 10 | a + ? = 10 |
+| Forêt des Soustractions | soustractions jusqu'à 20 |
+| Grotte des Multiplications | tables (2–5 × 2–9) |
+
+Plus la zone choisie est difficile (table élevée, multiplications...), plus les créatures rencontrées sont costaudes.
 
 ## 🧠 Péda
 
