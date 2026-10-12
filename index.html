@@ -98,7 +98,7 @@
     border-radius: 50%;
   }
   #platform-enemy { top: 78px; left: 18px; }
-  #platform-player { bottom: 12px; right: 18px; width: 150px; height: 30px; }
+  #platform-player { bottom: 32px; right: 18px; width: 150px; height: 30px; }
   #enemy-sprite {
     position: absolute;
     top: 18px; left: 42px;
@@ -109,10 +109,10 @@
   }
   #player-sprite {
     position: absolute;
-    bottom: 30px; right: 52px;
-    font-size: 4.6rem;
+    bottom: 42px; right: 46px;
+    font-size: 4.4rem;
     line-height: 1;
-    z-index: 2;
+    z-index: 4;
     transition: transform .1s;
   }
   #enemy-sprite.hit, #player-sprite.hit { animation: shake .3s; }
@@ -159,7 +159,7 @@
     white-space: nowrap;
   }
   #enemy-area { top: 12px; right: 12px; }
-  #player-area { bottom: 12px; left: 12px; }
+  #player-area { bottom: 34px; left: 12px; }
   #enemy-name, #player-name {
     font-size: 0.95rem;
     color: #383838;
@@ -396,7 +396,7 @@
     <div class="platform" id="platform-enemy"></div>
     <div class="platform" id="platform-player"></div>
     <div id="enemy-sprite">🐱</div>
-    <div id="player-sprite">🧑‍🎤</div>
+    <div id="player-sprite">🦸</div>
     <div class="info-box" id="enemy-area">
       <div id="enemy-name">Chatomon</div>
       <div class="hp-bar-outer"><div class="hp-bar-inner" id="enemy-hp"></div></div>
