@@ -131,22 +131,32 @@
     padding: 7px 9px;
     z-index: 3;
   }
-  #enemy-pool-bar {
+  #pool-bars {
     position: absolute;
     bottom: 0; left: 0; right: 0;
-    height: 22px;
-    background: var(--hp-red);
+    height: 24px;
+    display: flex;
     border-top: 3px solid #000;
     z-index: 3;
   }
-  #enemy-pool-text {
-    font-size: 0.85rem;
+  .pool-bar {
+    flex: 1;
+    background: var(--hp-red);
+    overflow: hidden;
+  }
+  #player-pool-bar {
+    background: #d63a2f;
+    border-right: 3px solid #000;
+  }
+  .pool-bar-text {
+    font-size: 0.8rem;
     font-weight: bold;
     color: #fff;
     text-shadow: 1px 1px 0 #000;
     text-align: center;
-    line-height: 22px;
+    line-height: 24px;
     letter-spacing: 1px;
+    white-space: nowrap;
   }
   #enemy-area { top: 12px; right: 12px; }
   #player-area { bottom: 12px; left: 12px; }
@@ -397,7 +407,10 @@
       <div class="hp-bar-outer small"><div class="hp-bar-inner" id="player-hp"></div></div>
       <div class="hp-text-small" id="player-hp-text">30 / 30 PV</div>
     </div>
-    <div id="enemy-pool-bar"><span id="enemy-pool-text">— / —</span></div>
+    <div id="pool-bars">
+      <div class="pool-bar" id="player-pool-bar"><span class="pool-bar-text" id="player-pool-text">30 / 30</span></div>
+      <div class="pool-bar" id="enemy-pool-bar"><span class="pool-bar-text" id="enemy-pool-text">— / —</span></div>
+    </div>
   </div>
 
   <div id="battle-area">
@@ -650,6 +663,7 @@ function updatePlayerHp() {
   playerHpBar.style.width = pct + "%";
   playerHpBar.style.background = pct > 50 ? "var(--hp-green)" : pct > 20 ? "var(--hp-yellow)" : "var(--hp-red)";
   playerHpText.textContent = `${Math.max(0, state.playerHp)} / ${PLAYER_HP} PV`;
+  $("player-pool-text").textContent = `${Math.max(0, state.playerHp)} / ${PLAYER_HP}`;
 }
 
 function playerHitAnimation(dmg) {
