@@ -1,52 +1,63 @@
 # Calculomon — Le RPG du calcul mental 🐱⚡
 
-Un jeu dans le style **Pokémon / Pokéclicker** où l'on bat des créatures en résolvant des **calculs mentaux de niveau CP**.
+Un jeu web dans le style **Pokémon / Pokéclicker** où l'on bat des créatures en résolvant des **calculs mentaux**, du CP au CE1 (extensible jusqu'au CM2).
 
-Plus tu réponds vite, plus ton attaque est puissante — et en dessous de 1,5 seconde, tu as 35 % de chance de porter un **coup critique** (dégâts ×2,5) 💥
+Basé sur les programmes et repères de progression officiels : mémorisation et **automatisation des faits numériques**, restitution quasi instantanée pour soulager la mémoire de travail.
 
 ## 🎮 Comment jouer
 
-1. Ouvre simplement `index.html` dans un navigateur — aucune installation ni dépendance.
-2. Une créature apparaît avec un calcul (ex. `7 + 8 = ?`).
-3. Tape ta réponse et appuie sur **Entrée** (ou clique sur *Attaquer !*).
+1. Ouvre `index.html` dans un navigateur (TBI, tablette ou ordinateur) — aucune installation, fonctionne hors-ligne.
+2. Choisis une zone sur la **carte du monde** (catégories débloquées progressivement).
+3. Résous le calcul affiché : tape au clavier ou utilise le **pavé numérique tactile**.
 4. **Vitesse = puissance** :
-   - Réponse instantanée → dégâts max
-   - Réponse lente → dégâts faibles
-   - **< 1,5 s** → chance de coup critique 💥
-5. Ton Calculomon a **30 PV**, affichés en permanence sous l'ennemi. Une mauvaise réponse (−4 PV) ou un dépassement des 6 secondes (−5 PV) → il perd des PV, et **à 0 PV le joueur perd** (écran de défaite, retour au choix des zones).
-6. Après chaque victoire, tu récupères 3 PV, et les créatures deviennent un peu plus fortes.
-7. Le bouton **🗺️ Changer de zone** permet de retourner au choix des zones à tout moment.
+   - réponse < 3 s → **coup critique** (×2,5 dégâts)
+   - réponse lente mais correcte → dégâts réduits, mais **jamais de pénalité** sur les PV
+5. En cas d'erreur : ton Calculomon perd quelques PV (2) et le jeu affiche **la procédure efficace attendue** (ex. « pour 7 + 5 : va d'abord à la dizaine... »), pas seulement le résultat. Le fait échoué **revient plus souvent** (répétition espacée) jusqu'à maîtrise.
+6. Bouton **📈 Progrès** : fluence (égalités/minute) par catégorie, taux de réussite, progrès visibles par l'élève.
 
-## 🗺️ Carte du monde
+## 📚 Catégories (progression CP → CE1)
 
-Au démarrage (et via le bouton *Changer de zone*), le joueur se déplace sur une **carte du monde** où chaque lieu est une zone d'entraînement. Un drapeau 🚩 marque ta position actuelle :
+### 📘 CP (dès le début)
+| Zone | Contenu |
+|------|---------|
+| 💧 Compléments à 10 | `3 + ? = 10` |
+| 🏔️ Doubles | doubles ≤ 10 et dizaines entières (jusqu'à 50) |
+| 🌗 Moitiés | moitiés des nombres pairs ≤ 20 (déblocage : 3 victoires) |
+| 🧩 Décompositions ≤ 10 | `4 + ? = 9` (déblocage : 5 victoires) |
+| ➕ Tables d'addition | tables des nombres < 10, avec passage de dizaine (déblocage : 7 victoires) |
 
-### ➕ Tables d'addition (9 zones)
-| Zone | Calculs |
-|------|----------|
-| Table de +1 | 1 + 1 → 1 + 9 |
-| Table de +2 | 2 + 1 → 2 + 9 |
-| ... | ... |
-| Table de +9 | 9 + 1 → 9 + 9 |
+### 📗 CE1 (déblocage progressif)
+| Zone | Contenu |
+|------|---------|
+| 🔁 Additions 2 sens | résultat inconnu **et** égalité à trou (cible : ~12 ég./min) |
+| ✌️ Table de ×2 | dans les deux sens |
+| 🖐️ Table de ×5 | dans les deux sens |
+| 🔟 Table de ×10 | dans les deux sens |
+| 📚 Dizaines entières | ajouter/retrancher des dizaines |
 
-### ⭐ Zones spéciales
-| Zone | Calculs |
-|------|----------|
-| Vallée des Doubles | les doubles (a + a, jusqu'à 10 + 10) |
-| Lac des Compléments à 10 | a + ? = 10 |
-| Forêt des Soustractions | soustractions jusqu'à 20 |
-| Grotte des Multiplications | tables (2–5 × 2–9) |
+Chaque catégorie propose les calculs **dans les deux sens** : résultat inconnu (`7 × 8 = ?`) et égalité à trou (`7 × ? = 42`, `4 + ? = 12`).
 
-Plus la zone choisie est difficile (table élevée, multiplications...), plus les créatures rencontrées sont costaudes.
+## 🧠 Principes pédagogiques
 
-## 🧠 Péda
+- **Rétroaction immédiate** : en cas d'erreur, affichage de la **procédure** efficace (aller à la dizaine, décomposition...), pas seulement le résultat.
+- **Répétition espacée** : un fait numérique échoué revient prioritairement jusqu'à maîtrise.
+- **Fluence mesurée** : égalités correctes par minute, suivie par catégorie, visible par l'élève (écran Progrès).
+- **Climat serein** : pas de classement, pas d'échec bloquant — défaite = réessai, pénalités douces.
+- **Deux sens systématiques** : résultat inconnu et égalité à trou.
 
-Conçu pour s'entraîner au calcul mental en s'amusant :
-- additions et soustractions **sans et avec passage de dizaine**,
-- premières **tables de multiplication**,
-- la pression du chrono motive l'**automatisation** du calcul,
-- la série de bonnes réponses consécutives augmente les dégâts (bonus de régularité).
+## 🔒 Données
+
+Aucune donnée personnelle collectée. La progression est stockée **localement** dans le navigateur (`localStorage`).
+
+## 🗺️ Feuille de route
+
+- [x] Structure CP + CE1 (10 catégories)
+- [x] Fluence + écran de progrès + répétition espacée
+- [ ] CE2 : fluence renforcée (15 ég./min), tables de multiplication complètes, × 10 / 100 / 1000
+- [ ] CM1 : procédures ±9/±19/±29/±39, ×4/×8 (double du double), distributivité, numération de position
+- [ ] CM2 : multiplication/division par 10/100/1000 sur décimaux, division mentale
+- [ ] Mode oral (questions lues à voix haute)
 
 ## 🛠️ Technique
 
-Fichier unique `index.html` : HTML + CSS + JavaScript vanilla, aucune dépendance, fonctionne hors-ligne.
+Fichier unique `index.html` : HTML + CSS + JavaScript vanilla, aucune dépendance, aucune API, responsive (TBI/tablette/ordinateur).

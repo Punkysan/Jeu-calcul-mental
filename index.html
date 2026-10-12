@@ -27,61 +27,32 @@
     align-items: center;
     padding: 10px;
   }
-  h1 {
-    font-size: 1.6rem;
-    margin: 10px 0;
-    text-align: center;
-    color: var(--accent);
-    text-shadow: 2px 2px 0 #000;
-  }
+  h1 { font-size: 1.6rem; margin: 10px 0; text-align: center; color: var(--accent); text-shadow: 2px 2px 0 #000; }
   #game {
-    width: 100%;
-    max-width: 700px;
+    width: 100%; max-width: 700px;
     background: var(--panel);
-    border: 4px solid #000;
-    border-radius: 12px;
+    border: 4px solid #000; border-radius: 12px;
     padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    display: flex; flex-direction: column; gap: 12px;
   }
   .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .zone-badge {
-    background: var(--panel-light);
-    padding: 4px 10px;
-    border-radius: 6px;
-    border: 2px solid #000;
-    font-weight: bold;
-  }
+  .zone-badge { background: var(--panel-light); padding: 4px 10px; border-radius: 6px; border: 2px solid #000; font-weight: bold; }
   #stats { font-size: 0.9rem; }
-  /* ---- Scène de combat façon Pokémon GBA / Pokéclicker ---- */
   /* ---- Scène de combat piscine façon Pokéclicker ---- */
   #battle-scene {
-    position: relative;
-    height: 240px;
-    background:
-      linear-gradient(#3fa945 0%, #3fa945 14%,
-                      #2f8fd6 14%, #2f8fd6 45%,
-                      #4fc3f7 45%, #4fc3f7 100%);
-    border: 3px solid #000;
-    border-radius: 8px;
+    position: relative; height: 240px;
+    background: linear-gradient(#3fa945 0%, #3fa945 14%, #2f8fd6 14%, #2f8fd6 45%, #4fc3f7 45%, #4fc3f7 100%);
+    border: 3px solid #000; border-radius: 8px;
     overflow: hidden;
-    image-rendering: pixelated;
   }
   .pool-edge {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 14%;
-    background: repeating-linear-gradient(90deg,
-      #3fa945 0px, #3fa945 18px, #2d8a35 18px, #2d8a35 36px);
+    position: absolute; top: 0; left: 0; right: 0; height: 14%;
+    background: repeating-linear-gradient(90deg, #3fa945 0px, #3fa945 18px, #2d8a35 18px, #2d8a35 36px);
     border-bottom: 3px solid #fff;
   }
   .water-wave {
-    position: absolute;
-    left: 0; right: 0;
-    height: 8px;
-    background: rgba(255,255,255,.35);
-    border-radius: 50%;
+    position: absolute; left: 0; right: 0; height: 8px;
+    background: rgba(255,255,255,.35); border-radius: 50%;
     animation: wave 3s ease-in-out infinite;
   }
   @keyframes wave {
@@ -91,30 +62,13 @@
   #wave-1 { top: 16%; }
   #wave-2 { top: 55%; animation-delay: 1.2s; }
   .platform {
-    position: absolute;
-    width: 130px; height: 26px;
-    background: rgba(255,255,255,.25);
-    border: 2px solid rgba(255,255,255,.5);
-    border-radius: 50%;
+    position: absolute; width: 130px; height: 26px;
+    background: rgba(255,255,255,.25); border: 2px solid rgba(255,255,255,.5); border-radius: 50%;
   }
   #platform-enemy { top: 78px; left: 18px; }
   #platform-player { bottom: 32px; right: 18px; width: 150px; height: 30px; }
-  #enemy-sprite {
-    position: absolute;
-    top: 18px; left: 42px;
-    font-size: 3.6rem;
-    line-height: 1;
-    z-index: 2;
-    transition: transform .1s;
-  }
-  #player-sprite {
-    position: absolute;
-    bottom: 42px; right: 46px;
-    font-size: 4.4rem;
-    line-height: 1;
-    z-index: 4;
-    transition: transform .1s;
-  }
+  #enemy-sprite { position: absolute; top: 18px; left: 42px; font-size: 3.6rem; line-height: 1; z-index: 2; }
+  #player-sprite { position: absolute; bottom: 42px; right: 46px; font-size: 4.4rem; line-height: 1; z-index: 4; }
   #enemy-sprite.hit, #player-sprite.hit { animation: shake .3s; }
   @keyframes shake {
     0%,100% { transform: translateX(0); }
@@ -122,263 +76,111 @@
     75% { transform: translateX(10px) rotate(5deg); }
   }
   .info-box {
-    position: absolute;
-    width: 210px;
-    background: #f8f8d0;
-    border: 3px solid #000;
+    position: absolute; width: 210px;
+    background: #f8f8d0; border: 3px solid #000;
     box-shadow: inset -3px -3px 0 #b8b890, 3px 3px 0 rgba(0,0,0,.4);
-    border-radius: 6px;
-    padding: 7px 9px;
-    z-index: 3;
-  }
-  #pool-bars {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 24px;
-    display: flex;
-    border-top: 3px solid #000;
-    z-index: 3;
-  }
-  .pool-bar {
-    flex: 1;
-    background: var(--hp-red);
-    overflow: hidden;
-  }
-  #player-pool-bar {
-    background: #d63a2f;
-    border-right: 3px solid #000;
-  }
-  .pool-bar-text {
-    font-size: 0.8rem;
-    font-weight: bold;
-    color: #fff;
-    text-shadow: 1px 1px 0 #000;
-    text-align: center;
-    line-height: 24px;
-    letter-spacing: 1px;
-    white-space: nowrap;
+    border-radius: 6px; padding: 7px 9px; z-index: 3;
   }
   #enemy-area { top: 12px; right: 12px; }
   #player-area { bottom: 34px; left: 12px; }
-  #enemy-name, #player-name {
-    font-size: 0.95rem;
-    color: #383838;
-    font-weight: bold;
-    text-align: left;
+  #enemy-name, #player-name { font-size: 0.95rem; color: #383838; font-weight: bold; text-align: left; }
+  .hp-bar-outer { width: 100%; height: 10px; background: #303030; border: 2px solid #000; border-radius: 4px; margin-top: 6px; overflow: hidden; }
+  .hp-bar-inner { height: 100%; background: var(--hp-green); transition: width .25s, background .25s; }
+  #hp-text, .hp-text-small { font-size: 0.75rem; color: #383838; margin-top: 4px; text-align: right; }
+  #pool-bars {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 24px;
+    display: flex; border-top: 3px solid #000; z-index: 5;
   }
-  .hp-bar-outer {
-    width: 100%;
-    height: 10px;
-    background: #303030;
-    border: 2px solid #000;
-    border-radius: 4px;
-    margin-top: 6px;
-    overflow: hidden;
-  }
-  .hp-bar-outer.small { height: 10px; }
-  .hp-bar-inner {
-    height: 100%;
-    background: var(--hp-green);
-    transition: width .25s, background .25s;
-  }
-  #hp-text, .hp-text-small {
-    font-size: 0.75rem;
-    color: #383838;
-    margin-top: 4px;
-    text-align: right;
+  .pool-bar { flex: 1; background: var(--hp-red); overflow: hidden; }
+  #player-pool-bar { background: #d63a2f; border-right: 3px solid #000; }
+  .pool-bar-text {
+    font-size: 0.8rem; font-weight: bold; color: #fff; text-shadow: 1px 1px 0 #000;
+    text-align: center; line-height: 24px; letter-spacing: 1px; white-space: nowrap;
   }
   .dmg-float {
-    position: absolute;
-    font-weight: bold;
-    font-size: 1.5rem;
-    animation: floatUpEnemy 1s forwards;
-    pointer-events: none;
-    text-shadow: 2px 2px 0 #000;
-    z-index: 5;
+    position: absolute; font-weight: bold; font-size: 1.5rem;
+    animation: floatUpEnemy 1s forwards; pointer-events: none;
+    text-shadow: 2px 2px 0 #000; z-index: 6;
   }
   .dmg-float-player { color: var(--hp-red) !important; animation: floatUp 1s forwards; }
-  @keyframes floatUpEnemy {
-    from { top: 40px; opacity: 1; }
-    to { top: -20px; opacity: 0; }
-  }
-  @keyframes floatUp {
-    from { bottom: 60px; opacity: 1; }
-    to { bottom: 160px; opacity: 0; }
-  }
+  @keyframes floatUpEnemy { from { top: 40px; opacity: 1; } to { top: -20px; opacity: 0; } }
+  @keyframes floatUp { from { bottom: 60px; opacity: 1; } to { bottom: 160px; opacity: 0; } }
   .flash-crit {
-    position: absolute; inset: 0;
-    background: rgba(255,159,67,.35);
-    animation: fadeout .4s forwards;
-    pointer-events: none;
-    z-index: 4;
+    position: absolute; inset: 0; background: rgba(255,159,67,.35);
+    animation: fadeout .4s forwards; pointer-events: none; z-index: 5;
   }
+  @keyframes fadeout { to { opacity: 0; } }
+  /* ---- Zone de réponse ---- */
   #battle-area {
-    background: #f8f8d0;
-    border: 4px solid #000;
+    background: #f8f8d0; border: 4px solid #000;
     box-shadow: inset -4px -4px 0 #b8b890, 4px 4px 0 rgba(0,0,0,.4);
-    border-radius: 8px;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    border-radius: 8px; padding: 15px;
+    display: flex; flex-direction: column; gap: 10px;
   }
-  #question {
-    font-size: 1.9rem;
-    text-align: center;
-    color: #282828;
-    letter-spacing: 3px;
-  }
+  #question { font-size: 1.9rem; text-align: center; color: #282828; letter-spacing: 3px; }
   #answer-input {
-    font-size: 1.5rem;
-    text-align: center;
-    padding: 8px;
-    border-radius: 8px;
-    border: 3px solid #000;
-    background: #fff;
-    color: #000;
-    width: 100%;
-    font-family: inherit;
+    font-size: 1.5rem; text-align: center; padding: 8px;
+    border-radius: 8px; border: 3px solid #000;
+    background: #fff; color: #000; width: 100%; font-family: inherit;
   }
   #answer-input:focus { outline: 3px solid var(--accent); }
-  #timer-bar-outer {
-    height: 12px;
-    background: #333;
-    border: 2px solid #000;
-    border-radius: 6px;
-    overflow: hidden;
+  #numpad {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
   }
-  #timer-bar-inner {
-    height: 100%;
-    background: var(--hp-yellow);
-    width: 100%;
-    transition: width .1s linear;
+  .num-btn {
+    background: #3b5dc9; color: #fff; border: 3px solid #000; border-radius: 8px;
+    padding: 10px 0; font-family: inherit; font-weight: bold; font-size: 1.1rem; cursor: pointer;
   }
-  #feedback {
-    min-height: 1.4em;
-    text-align: center;
-    font-size: 1rem;
-    font-weight: bold;
-  }
-  #feedback.good { color: var(--hp-green); }
-  #feedback.bad { color: var(--hp-red); }
-  #feedback.crit { color: var(--crit); font-size: 1.2rem; }
-  #log {
-    font-size: 0.8rem;
-    max-height: 100px;
-    overflow-y: auto;
-    background: #111;
-    border: 2px solid #000;
-    border-radius: 6px;
-    padding: 6px;
-  }
+  .num-btn:hover { background: #4a6fdb; }
+  #timer-bar-outer { height: 12px; background: #333; border: 2px solid #000; border-radius: 6px; overflow: hidden; }
+  #timer-bar-inner { height: 100%; background: var(--hp-yellow); width: 100%; transition: width .1s linear; }
+  #feedback { min-height: 1.4em; text-align: center; font-size: 0.95rem; font-weight: bold; }
+  #feedback.good { color: #2a7d2a; }
+  #feedback.bad { color: #b02020; }
+  #feedback.crit { color: #c05a00; font-size: 1.1rem; }
+  #log { font-size: 0.8rem; max-height: 90px; overflow-y: auto; background: #111; border: 2px solid #000; border-radius: 6px; padding: 6px; }
   #log div { padding: 1px 0; }
   .btn {
-    background: var(--panel-light);
-    color: #fff;
-    border: 3px solid #000;
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-family: inherit;
-    font-weight: bold;
-    font-size: 1rem;
-    cursor: pointer;
+    background: var(--panel-light); color: #fff; border: 3px solid #000; border-radius: 8px;
+    padding: 8px 14px; font-family: inherit; font-weight: bold; font-size: 1rem; cursor: pointer;
   }
   .btn:hover { background: #4a6fdb; }
   .btn:disabled { opacity: .5; cursor: not-allowed; }
+  /* ---- Overlays ---- */
   .overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.75);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 10;
-    padding: 10px;
+    position: fixed; inset: 0; background: rgba(0,0,0,.75);
+    display: flex; align-items: center; justify-content: center; z-index: 10; padding: 10px;
   }
   .overlay.hidden { display: none; }
   .overlay-box {
-    background: var(--panel);
-    border: 4px solid #000;
-    border-radius: 12px;
-    padding: 25px;
-    text-align: center;
-    max-width: 520px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
+    background: var(--panel); border: 4px solid #000; border-radius: 12px;
+    padding: 25px; text-align: center; max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto;
   }
   .overlay-box h2 { color: var(--accent); margin-bottom: 10px; }
   .overlay-box p { margin-bottom: 15px; line-height: 1.5; }
-  .zone-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    gap: 8px;
-    margin-bottom: 15px;
-  }
-  .zone-btn {
-    background: #3b5dc9;
-    color: #fff;
-    border: 3px solid #000;
-    border-radius: 8px;
-    padding: 10px 6px;
-    font-family: inherit;
-    font-weight: bold;
-    font-size: 0.95rem;
-    cursor: pointer;
-  }
-  .zone-btn:hover { background: #4a6fdb; transform: scale(1.05); }
-  .zone-btn.special { background: #7a4fbf; }
-  .zone-btn.special:hover { background: #8d5fd0; }
-  .zone-section-title {
-    text-align: left;
-    color: var(--accent);
-    font-size: 0.95rem;
-    margin: 8px 0 6px;
-  }
-  #map-screen {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    position: relative;
-    padding: 15px 5px;
-  }
+  /* ---- Carte ---- */
+  #map-screen { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 15px 5px; }
   .map-node {
-    background: #3b5dc9;
-    border: 3px solid #000;
-    border-radius: 10px;
-    padding: 10px 4px;
-    text-align: center;
-    cursor: pointer;
-    font-family: inherit;
-    color: #fff;
-    font-weight: bold;
-    font-size: 0.85rem;
-    position: relative;
-    transition: transform .15s;
+    background: #3b5dc9; border: 3px solid #000; border-radius: 10px; padding: 10px 4px;
+    text-align: center; cursor: pointer; font-family: inherit; color: #fff;
+    font-weight: bold; font-size: 0.8rem; position: relative; transition: transform .15s;
   }
   .map-node:hover { transform: scale(1.07); background: #4a6fdb; }
   .map-node.special { background: #7a4fbf; }
   .map-node.special:hover { background: #8d5fd0; }
-  .map-node.current {
-    outline: 3px solid var(--accent);
-    background: #2f8f2f;
-  }
+  .map-node.current { outline: 3px solid var(--accent); background: #2f8f2f; }
   .map-node.current:hover { background: #3aa53a; }
+  .map-node.locked { opacity: .45; cursor: not-allowed; }
   .map-node .node-sprite { font-size: 1.8rem; display: block; }
-  .map-node .node-avatar {
-    position: absolute;
-    top: -14px; right: -8px;
-    font-size: 1.3rem;
-    animation: bounce 1s infinite;
-    filter: drop-shadow(1px 1px 0 #000);
-  }
-  @keyframes bounce {
-    0%,100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
-  }
-  #map-hint {
-    font-size: 0.85rem;
-    color: #cfd8ff;
-    margin-top: 5px;
-  }
-  @keyframes fadeout { to { opacity: 0; } }
+  .map-node .node-avatar { position: absolute; top: -14px; right: -8px; font-size: 1.3rem; animation: bounce 1s infinite; filter: drop-shadow(1px 1px 0 #000); }
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  #map-hint { font-size: 0.85rem; color: #cfd8ff; margin-top: 5px; }
+  .grade-title { grid-column: 1 / -1; text-align: left; color: var(--accent); font-size: 0.95rem; margin: 4px 0 0; }
+  /* ---- Écran de progrès ---- */
+  .progress-row { text-align: left; margin: 6px 0; font-size: 0.85rem; }
+  .progress-bar-outer { width: 100%; height: 10px; background: #111; border: 2px solid #000; border-radius: 4px; overflow: hidden; }
+  .progress-bar-inner { height: 100%; background: var(--hp-green); }
+  .fluency-big { font-size: 1.3rem; color: var(--accent); margin: 8px 0; }
 </style>
 </head>
 <body>
@@ -386,7 +188,7 @@
 <div id="game">
   <div class="row">
     <span class="zone-badge" id="zone-name">Choisis ta zone !</span>
-    <span id="stats">Or : 0 · PV : 30/30</span>
+    <span id="stats">PV : 30/30 · Or : 0</span>
   </div>
 
   <div id="battle-scene">
@@ -404,7 +206,7 @@
     </div>
     <div class="info-box" id="player-area">
       <div id="player-name">Ton Calculomon</div>
-      <div class="hp-bar-outer small"><div class="hp-bar-inner" id="player-hp"></div></div>
+      <div class="hp-bar-outer"><div class="hp-bar-inner" id="player-hp"></div></div>
       <div class="hp-text-small" id="player-hp-text">30 / 30 PV</div>
     </div>
     <div id="pool-bars">
@@ -415,14 +217,16 @@
 
   <div id="battle-area">
     <div id="question">2 + 3 = ?</div>
-    <input id="answer-input" type="number" autocomplete="off" placeholder="Ta réponse...">
+    <input id="answer-input" type="number" autocomplete="off" inputmode="numeric" placeholder="Ta réponse...">
+    <div id="numpad"></div>
     <div id="timer-bar-outer"><div id="timer-bar-inner"></div></div>
     <div id="feedback"></div>
     <div id="log"></div>
     <div class="row">
       <button class="btn" id="btn-attack">Attaquer !</button>
       <button class="btn" id="btn-flee">Fuir</button>
-      <button class="btn" id="btn-change-zone">🗺️ Changer de zone</button>
+      <button class="btn" id="btn-map">🗺️ Carte</button>
+      <button class="btn" id="btn-progress">📈 Progrès</button>
     </div>
   </div>
 </div>
@@ -430,9 +234,9 @@
 <div class="overlay" id="zone-overlay">
   <div class="overlay-box">
     <h2>🗺️ Carte du monde de Calculomon</h2>
-    <p>Déplace-toi vers un lieu pour t'entraîner à sa table !</p>
+    <p>Déplace-toi vers un lieu pour t'entraîner ! Le drapeau 🚩 indique ta position.</p>
     <div id="map-screen"></div>
-    <p id="map-hint">Le drapeau 🚩 indique ta position actuelle.</p>
+    <p id="map-hint">Certaines zones se débloquent en gagnant des combats.</p>
   </div>
 </div>
 
@@ -447,15 +251,24 @@
 <div class="overlay hidden" id="gameover-overlay">
   <div class="overlay-box">
     <h2>💤 Défaite...</h2>
-    <p>Ton Calculomon est K.O. ! Retour au choix des zones.</p>
+    <p>Ton Calculomon est K.O. ! Pas grave : on réessaie, chaque erreur apprend quelque chose.</p>
     <button class="btn" id="btn-restart">Réessayer</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="progress-overlay">
+  <div class="overlay-box">
+    <h2>📈 Mes progrès</h2>
+    <div class="fluency-big" id="fluency-total">Fluence : 0 égalité/min</div>
+    <div id="progress-details"></div>
+    <button class="btn" id="btn-close-progress">Fermer</button>
   </div>
 </div>
 
 <script>
 "use strict";
 
-// ---------- Données du jeu ----------
+// ---------- Créatures ----------
 const CREATURES = [
   { name: "Chatomon",     sprite: "🐱", baseHp: 10 },
   { name: "Oiseaumon",    sprite: "🐦", baseHp: 12 },
@@ -471,61 +284,177 @@ const CREATURES = [
   { name: "Dragonmon",    sprite: "🐲", baseHp: 50 }
 ];
 
-// Types de zones :
-//  - table  : table d'addition de n (n + 1 ... n + 9)
-//  - double : les doubles (a + a)
-//  - comp10 : les compléments à 10 (a + ? = 10)
-//  - sub    : soustractions
-//  - mult   : petites multiplications
-const ZONES = [];
-
-const MAP_LAYOUT = [
-  { id: "table1", x: 0, y: 0 }, { id: "table2", x: 1, y: 0 }, { id: "table3", x: 2, y: 0 }, { id: "comp10", x: 3, y: 0 },
-  { id: "table4", x: 0, y: 1 }, { id: "table5", x: 1, y: 1 }, { id: "table6", x: 2, y: 1 }, { id: "double", x: 3, y: 1 },
-  { id: "table7", x: 0, y: 2 }, { id: "table8", x: 1, y: 2 }, { id: "table9", x: 2, y: 2 }, { id: "sub",    x: 3, y: 2 },
-  { id: "mult",   x: 1, y: 3 }
+// ---------- Catégories de faits numériques (progression CP → CE1) ----------
+// type de génération + procédure affichée en cas d'erreur
+const CATS = [
+  // ----- CP -----
+  { id: "cp_comp10",  grade: "CP",  label: "Compléments à 10",   sprite: "💧", difficulty: 1, gen: genComp10 },
+  { id: "cp_double",  grade: "CP",  label: "Doubles",            sprite: "🏔️", difficulty: 2, gen: genDouble },
+  { id: "cp_half",    grade: "CP",  label: "Moitiés",            sprite: "🌗", difficulty: 2, gen: genHalf },
+  { id: "cp_decomp",  grade: "CP",  label: "Décompositions ≤ 10", sprite: "🧩", difficulty: 2, gen: genDecomp },
+  { id: "cp_table",   grade: "CP",  label: "Tables d'addition",  sprite: "➕", difficulty: 3, gen: genAddTable },
+  // ----- CE1 -----
+  { id: "ce1_addboth", grade: "CE1", label: "Additions 2 sens",   sprite: "🔁", difficulty: 4, gen: genAddBoth },
+  { id: "ce1_mul2",   grade: "CE1", label: "Table de ×2",        sprite: "✌️", difficulty: 4, gen: c => genMulTable(c, 2) },
+  { id: "ce1_mul5",   grade: "CE1", label: "Table de ×5",        sprite: "🖐️", difficulty: 5, gen: c => genMulTable(c, 5) },
+  { id: "ce1_mul10",  grade: "CE1", label: "Table de ×10",       sprite: "🔟", difficulty: 5, gen: c => genMulTable(c, 10) },
+  { id: "ce1_tens",   grade: "CE1", label: "Dizaines entières",  sprite: "📚", difficulty: 6, gen: genTens }
 ];
 
-for (let n = 1; n <= 9; n++) {
-  ZONES.push({
-    id: "table" + n,
-    name: "Table de +" + n,
-    label: "+" + n,
-    type: "table",
-    n,
-    difficulty: n,
-    special: false
-  });
-}
+// Déblocage progressif : nombre de victoires requises dans le jeu
+const UNLOCK_AT = { cp_comp10: 0, cp_double: 0, cp_half: 3, cp_decomp: 5, cp_table: 7, ce1_addboth: 10, ce1_mul2: 12, ce1_mul5: 14, ce1_mul10: 16, ce1_tens: 18 };
 
-ZONES.push(
-  { id: "double", name: "Vallée des Doubles",       label: "Doubles 2+2...",  type: "double", difficulty: 5,  special: true },
-  { id: "comp10", name: "Lac des Compléments à 10", label: "? + ? = 10",      type: "comp10", difficulty: 6,  special: true },
-  { id: "sub",    name: "Forêt des Soustractions",  label: "− Soustractions", type: "sub",    difficulty: 7,  special: true },
-  { id: "mult",   name: "Grotte des Multiplications", label: "× Tables",      type: "mult",   difficulty: 9,  special: true }
-);
-
-const ANSWER_TIME_MS = 6000;      // temps de base pour répondre
-const CRIT_TIME_MS   = 1500;      // sous ce délai -> chance de coup critique
+const ANSWER_TIME_MS = 10000;
+const CRIT_TIME_MS   = 3000;   // < 3 s = coup critique (fluence)
 const BASE_DAMAGE    = 3;
 const PLAYER_HP      = 30;
-const WRONG_PENALTY  = 4;         // PV perdus si mauvaise réponse
-const TIMEOUT_PENALTY = 5;        // PV perdus si temps écoulé
+const WRONG_PENALTY  = 2;      // pénalité douce (climat serein)
+const TIMEOUT_PENALTY = 3;
 
 // ---------- État ----------
 let state = {
   gold: 0,
   playerHp: PLAYER_HP,
   streak: 0,
-  zoneKills: 0,   // victoires dans la zone en cours
-  currentZone: null
+  totalKills: 0,
+  zoneKills: 0,
+  currentZone: null,
+  // suivi par catégorie : tentatives, réussites, temps cumulé, faits échoués
+  catStats: {},
 };
+
+for (const c of CATS) {
+  state.catStats[c.id] = { attempts: 0, correct: 0, totalTimeMs: 0, failedFacts: {} };
+}
 
 let enemy = null;
 let currentQuestion = null;
 let questionStart = 0;
 let timerId = null;
 let awaitingAnswer = false;
+
+// ---------- Générateurs de calculs (dans les deux sens) ----------
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+// CP : compléments à 10 — 3 + ? = 10
+function genComp10() {
+  const a = randInt(1, 9);
+  return { text: `${a} + ? = 10`, answer: 10 - a,
+    procedure: `Pour aller de ${a} à 10 : ${a} + ${10 - a} = 10 (deux nombres amis qui font 10 ensemble).` };
+}
+
+// CP : doubles — 6 + 6, et dizaines 20 + 20
+function genDouble() {
+  if (Math.random() < 0.7) {
+    const a = randInt(1, 10);
+    return { text: `${a} + ${a} = ?`, answer: a + a,
+      procedure: `Le double de ${a} : compte 2 fois ${a} → ${a} + ${a} = ${2 * a}.` };
+  }
+  const t = randInt(1, 5) * 10;
+  return { text: `${t} + ${t} = ?`, answer: 2 * t,
+    procedure: `Le double de ${t} : ${t} + ${t} = ${2 * t} (double de ${t / 10} dizaines).` };
+}
+
+// CP : moitiés des nombres pairs ≤ 20
+function genHalf() {
+  const a = randInt(1, 10) * 2;
+  return { text: `La moitié de ${a} = ?`, answer: a / 2,
+    procedure: `La moitié de ${a} : c'est ${a / 2}, car ${a / 2} + ${a / 2} = ${a}.` };
+}
+
+// CP : décompositions additives ≤ 10 — 4 + ? = 9
+function genDecomp() {
+  const total = randInt(5, 10);
+  const a = randInt(1, total - 1);
+  return { text: `${a} + ? = ${total}`, answer: total - a,
+    procedure: `Pour aller de ${a} à ${total} : ${a} + ${total - a} = ${total}.` };
+}
+
+// CP : tables d'addition < 10
+function genAddTable() {
+  const a = randInt(1, 9), b = randInt(1, 9);
+  if (a + b <= 10 || Math.random() < 0.5) {
+    return { text: `${a} + ${b} = ?`, answer: a + b,
+      procedure: `Pour ${a} + ${b} : avance de ${b} depuis ${a} → ${a} + ${b} = ${a + b}.` };
+  }
+  // passage de dizaine : décomposer
+  return { text: `${a} + ${b} = ?`, answer: a + b,
+    procedure: `Pour ${a} + ${b} : va d'abord à la dizaine. ${a} + ${10 - a} = 10, puis il reste ${b - (10 - a)}. 10 + ${b - (10 - a)} = ${a + b}.` };
+}
+
+// CE1 : tables d'addition dans les deux sens (dont égalité à trou)
+function genAddBoth() {
+  const a = randInt(1, 9), b = randInt(2, 9);
+  if (Math.random() < 0.5) {
+    return { text: `${a} + ${b} = ?`, answer: a + b,
+      procedure: `Pour ${a} + ${b} : ${a} + ${b} = ${a + b}.` };
+  }
+  return { text: `${a} + ? = ${a + b}`, answer: b,
+    procedure: `Pour trouver le trou : ${a + b} − ${a} = ${b}.` };
+}
+
+// CE1 : tables de multiplication n (dans les deux sens)
+function genMulTable(cat, n) {
+  const b = randInt(1, 10);
+  if (Math.random() < 0.5) {
+    return { text: `${n} × ${b} = ?`, answer: n * b,
+      procedure: `${n} × ${b} = ${n * b} : ${b} paquets de ${n}.` };
+  }
+  return { text: `${n} × ? = ${n * b}`, answer: b,
+    procedure: `Pour trouver le trou : ${n * b} partagé en ${n}, c'est ${b} paquets de ${n} : ${n} × ${b} = ${n * b}.` };
+}
+
+// CE1 : ajouter/retrancher des dizaines entières
+function genTens() {
+  const a = randInt(1, 8) * 10, b = randInt(1, 5) * 10;
+  if (Math.random() < 0.5) {
+    return { text: `${a} + ${b} = ?`, answer: a + b,
+      procedure: `Dizaines avec dizaines : ${a / 10} + ${b / 10} = ${(a + b) / 10} dizaines → ${a + b}.` };
+  }
+  if (a - b > 0) {
+    return { text: `${a} − ${b} = ?`, answer: a - b,
+      procedure: `Dizaines avec dizaines : ${a / 10} − ${b / 10} = ${(a - b) / 10} dizaines → ${a - b}.` };
+  }
+  return { text: `${a} + ${b} = ?`, answer: a + b,
+    procedure: `Dizaines avec dizaines : ${a / 10} + ${b / 10} = ${(a + b) / 10} dizaines → ${a + b}.` };
+}
+
+// ---------- Répétition espacée ----------
+// Un fait échoué (identifié par son texte) revient plus souvent : on le repropose
+// avec une probabilité décroissante à chaque réussite.
+function pickQuestion() {
+  const zone = state.currentZone;
+  const stats = state.catStats[zone.id];
+  const failedIds = Object.keys(stats.failedFacts);
+  if (failedIds.length > 0 && Math.random() < 0.5) {
+    // re-pioche un fait échoué (priorité au plus échoué)
+    failedIds.sort((x, y) => stats.failedFacts[y] - stats.failedFacts[x]);
+    const factText = failedIds[0];
+    const q = zone.gen();
+    if (q.text === factText) return q;
+    // régénère jusqu'à retrouver (max 20 essais)
+    for (let i = 0; i < 20 && q.text !== factText; i++) q = zone.gen();
+    if (q.text === factText) return q;
+  }
+  return zone.gen();
+}
+
+function recordFact(zoneId, question, ok) {
+  const stats = state.catStats[zoneId];
+  stats.attempts++;
+  stats.totalTimeMs += Math.min(ANSWER_TIME_MS, question.elapsed || 0);
+  if (ok) {
+    stats.correct++;
+    if (stats.failedFacts[question.text] !== undefined) {
+      const fails = stats.failedFacts[question.text];
+      if (fails <= 1) delete stats.failedFacts[question.text];
+      else stats.failedFacts[question.text] = fails - 1;
+    }
+  } else {
+    stats.failedFacts[question.text] = (stats.failedFacts[question.text] || 0) + 1;
+  }
+  saveState();
+}
 
 // ---------- DOM ----------
 const $ = id => document.getElementById(id);
@@ -547,70 +476,54 @@ const playerHpText = $("player-hp-text");
 const zoneOverlay = $("zone-overlay");
 const victoryOverlay = $("victory-overlay");
 const gameoverOverlay = $("gameover-overlay");
+const progressOverlay = $("progress-overlay");
 
-// ---------- Générateurs de calculs (niveau CP) ----------
-function randInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+// ---------- Sauvegarde locale (aucune donnée personnelle) ----------
+const SAVE_KEY = "calculomon-save-v1";
+function saveState() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (saved && saved.catStats) {
+      state.gold = saved.gold || 0;
+      state.totalKills = saved.totalKills || 0;
+      state.catStats = saved.catStats;
+      // fusion défensive avec les catégories par défaut
+      for (const c of CATS) {
+        if (!state.catStats[c.id]) state.catStats[c.id] = { attempts: 0, correct: 0, totalTimeMs: 0, failedFacts: {} };
+      }
+    }
+  } catch (e) {}
 }
 
-function genQuestion() {
-  const zone = state.currentZone;
-  let a, b, ans, text;
-  switch (zone.type) {
-    case "table": // table d'addition de n : n + b
-      a = zone.n;
-      b = randInt(1, 9);
-      ans = a + b; text = `${a} + ${b}`;
-      break;
-    case "double": // les doubles : a + a
-      a = randInt(1, 10);
-      ans = a + a; text = `${a} + ${a}`;
-      break;
-    case "comp10": // complément à 10 : a + ? = 10
-      a = randInt(1, 9);
-      ans = 10 - a; text = `${a} + ? = 10`;
-      break;
-    case "sub": // soustractions
-      a = randInt(5, 20); b = randInt(1, a - 1);
-      ans = a - b; text = `${a} − ${b}`;
-      break;
-    case "mult": // petites multiplications
-      a = randInt(2, 5); b = randInt(2, 9);
-      ans = a * b; text = `${a} × ${b}`;
-      break;
-    default:
-      a = randInt(1, 9); b = randInt(1, 9);
-      ans = a + b; text = `${a} + ${b}`;
-  }
-  return { text, answer: ans };
-}
-
-// ---------- Zones ----------
-const PLACE_SPRITES = {
-  double: "🏔️",
-  comp10: "💧",
-  sub: "🌳",
-  mult: "🕳️"
-};
-
+// ---------- Carte ----------
 function buildZoneButtons() {
   const map = $("map-screen");
   map.innerHTML = "";
-  map.style.gridTemplateAreas = "\"a b c d\" \"e f g h\" \"i j k l\" \". m . .\"";
-  const cols = 4;
-  for (const spot of MAP_LAYOUT) {
-    const zone = ZONES.find(z => z.id === spot.id);
-    const btn = document.createElement("button");
-    btn.className = "map-node" + (zone.special ? " special" : "") + (state.currentZone && state.currentZone.id === zone.id ? " current" : "");
-    btn.title = zone.name;
-    const sprite = PLACE_SPRITES[zone.id] || (zone.type === "table" ? "➕" : "❓");
-    btn.innerHTML = `<span class="node-sprite">${sprite}</span>${zone.label}`;
-    if (state.currentZone && state.currentZone.id === zone.id) {
-      btn.innerHTML += `<span class="node-avatar">🚩</span>`;
+  let lastGrade = "";
+  for (const zone of CATS) {
+    if (zone.grade !== lastGrade) {
+      lastGrade = zone.grade;
+      const t = document.createElement("div");
+      t.className = "grade-title";
+      t.textContent = zone.grade === "CP" ? "📘 Niveau CP" : "📗 Niveau CE1";
+      map.appendChild(t);
     }
-    btn.style.gridColumn = (spot.x + 1);
-    btn.style.gridRow = (spot.y + 1);
-    btn.addEventListener("click", () => selectZone(zone));
+    const locked = state.totalKills < (UNLOCK_AT[zone.id] || 0);
+    const btn = document.createElement("button");
+    btn.className = "map-node" + (zone.grade !== "CP" ? " special" : "") +
+      (state.currentZone && state.currentZone.id === zone.id ? " current" : "") +
+      (locked ? " locked" : "");
+    btn.title = locked ? `Débloqué après ${UNLOCK_AT[zone.id]} victoires (tu en as ${state.totalKills})` : zone.label;
+    btn.innerHTML = `<span class="node-sprite">${zone.sprite}</span>${zone.label}` +
+      (locked ? " 🔒" : "") +
+      (state.currentZone && state.currentZone.id === zone.id ? `<span class="node-avatar">🚩</span>` : "");
+    btn.disabled = locked;
+    btn.addEventListener("click", () => { if (!locked) selectZone(zone); });
     map.appendChild(btn);
   }
 }
@@ -619,8 +532,9 @@ function selectZone(zone) {
   state.currentZone = zone;
   state.zoneKills = 0;
   state.streak = 0;
-  zoneName.textContent = zone.name;
-  addLog(`🚶 Tu te déplaces vers : ${zone.name}`);
+  zoneName.textContent = `${zone.label} (${zone.grade})`;
+  addLog(`🚶 Tu te déplaces vers : ${zone.label}`);
+  saveState();
   zoneOverlay.classList.add("hidden");
   victoryOverlay.classList.add("hidden");
   gameoverOverlay.classList.add("hidden");
@@ -638,14 +552,13 @@ function openZonePicker() {
 // ---------- Ennemis ----------
 function spawnEnemy() {
   const zone = state.currentZone;
-  // Plus la zone est difficile, plus les créatures sont fortes ; +5% PV par victoire dans la zone
-  const tier = Math.min(CREATURES.length - 1, Math.floor((zone.difficulty - 1) / 1.5) + randInt(0, 1));
-  const c = CREATURES[Math.min(CREATURES.length - 1, tier)];
-  const hp = Math.round(c.baseHp * (1 + state.zoneKills * 0.1));
+  const tier = Math.min(CREATURES.length - 1, Math.floor(zone.difficulty * 1.2) + randInt(0, 1) + Math.floor(state.zoneKills / 3));
+  const c = CREATURES[tier];
+  const hp = Math.round(c.baseHp * (1 + state.zoneKills * 0.08));
   enemy = { ...c, hp, maxHp: hp };
   enemySprite.textContent = c.sprite;
   enemySprite.classList.remove("hit");
-  enemyName.textContent = `${c.name} (${zone.name})`;
+  enemyName.textContent = `${c.name}`;
   updateEnemyHp();
   newQuestion();
 }
@@ -666,22 +579,11 @@ function updatePlayerHp() {
   $("player-pool-text").textContent = `${Math.max(0, state.playerHp)} / ${PLAYER_HP}`;
 }
 
-function playerHitAnimation(dmg) {
-  playerSprite.classList.remove("hit");
-  void playerSprite.offsetWidth;
-  playerSprite.classList.add("hit");
-  const el = document.createElement("div");
-  el.className = "dmg-float dmg-float-player";
-  el.textContent = `-${dmg}`;
-  el.style.left = (40 + Math.random() * 20) + "%";
-  battleScene.appendChild(el);
-  setTimeout(() => el.remove(), 1000);
-}
-
 // ---------- Combat ----------
 function newQuestion() {
-  currentQuestion = genQuestion();
-  questionEl.textContent = currentQuestion.text.includes("?") ? currentQuestion.text : `${currentQuestion.text} = ?`;
+  currentQuestion = pickQuestion();
+  currentQuestion.elapsed = 0;
+  questionEl.textContent = currentQuestion.text;
   answerInput.value = "";
   answerInput.disabled = false;
   answerInput.focus();
@@ -700,9 +602,7 @@ function tickTimer() {
   timerBar.style.width = (remaining / ANSWER_TIME_MS * 100) + "%";
   timerBar.style.background = remaining > ANSWER_TIME_MS * 0.5 ? "var(--hp-green)"
     : remaining > ANSWER_TIME_MS * 0.25 ? "var(--hp-yellow)" : "var(--hp-red)";
-  if (remaining <= 0 && awaitingAnswer) {
-    timeUp();
-  }
+  if (remaining <= 0 && awaitingAnswer) timeUp();
 }
 
 function submitAnswer() {
@@ -711,57 +611,46 @@ function submitAnswer() {
   if (val === "") return;
   const num = Number(val);
   const elapsed = performance.now() - questionStart;
+  currentQuestion.elapsed = elapsed;
   clearInterval(timerId);
   awaitingAnswer = false;
   answerInput.disabled = true;
-
-  if (num === currentQuestion.answer) {
-    onCorrectAnswer(elapsed);
-  } else {
-    onWrongAnswer(num);
-  }
+  if (num === currentQuestion.answer) onCorrectAnswer(elapsed);
+  else onWrongAnswer(num);
 }
 
 function onCorrectAnswer(elapsed) {
-  const speedRatio = Math.max(0, 1 - elapsed / ANSWER_TIME_MS);   // 1 = ultra rapide
+  recordFact(state.currentZone.id, currentQuestion, true);
+  const speedRatio = Math.max(0, 1 - elapsed / ANSWER_TIME_MS);
   let damage = Math.max(1, Math.round(BASE_DAMAGE * (0.5 + speedRatio * 1.5) + state.streak * 0.5));
-
   let crit = false;
   if (elapsed < CRIT_TIME_MS) {
-    crit = Math.random() < 0.35;
+    crit = Math.random() < 0.5;
     if (crit) damage = Math.round(damage * 2.5);
   }
-
   state.streak++;
   enemy.hp -= damage;
-  addLog(`${crit ? "💥 CRITIQUE ! " : ""}Bonne réponse (${currentQuestion.answer}) → ${damage} dégâts !`);
+  addLog(`${crit ? "💥 CRITIQUE ! " : ""}✅ ${currentQuestion.text.replace("?", currentQuestion.answer)} → ${damage} dégâts !`);
   showFeedback(crit ? `💥 COUP CRITIQUE ! ${damage} dégâts !` : `✅ Bien joué ! ${damage} dégâts`, crit ? "crit good" : "good");
-  enemySprite.classList.remove("hit");
-  void enemySprite.offsetWidth; // restart animation
-  enemySprite.classList.add("hit");
+  hitAnimation(enemySprite);
   floatDamage(damage, crit);
   updateEnemyHp();
-
-  if (enemy.hp <= 0) {
-    defeatEnemy();
-  } else {
-    setTimeout(newQuestion, 500);
-  }
+  if (enemy.hp <= 0) defeatEnemy();
+  else setTimeout(newQuestion, 500);
 }
 
 function onWrongAnswer(given) {
+  recordFact(state.currentZone.id, currentQuestion, false);
   state.streak = 0;
   state.playerHp -= WRONG_PENALTY;
-  addLog(`❌ Mauvaise réponse (${given} au lieu de ${currentQuestion.answer}). Ton Calculomon perd ${WRONG_PENALTY} PV !`);
-  showFeedback(`❌ Raté ! La réponse était ${currentQuestion.answer}. −${WRONG_PENALTY} PV`, "bad");
-  playerHitAnimation(WRONG_PENALTY);
+  // Rétroaction pédagogique : la procédure efficace, pas seulement le résultat
+  addLog(`❌ ${currentQuestion.text.replace("?", given)} → la réponse était ${currentQuestion.answer}.`);
+  showFeedback(`${currentQuestion.procedure} (−${WRONG_PENALTY} PV)`, "bad");
+  hitAnimation(playerSprite);
+  floatDamagePlayer(WRONG_PENALTY);
   updatePlayerHp();
-  updateStats();
-  if (state.playerHp <= 0) {
-    gameOver();
-  } else {
-    setTimeout(newQuestion, 900);
-  }
+  if (state.playerHp <= 0) gameOver();
+  else setTimeout(newQuestion, 2600);  // temps de lecture de la procédure
 }
 
 function timeUp() {
@@ -770,80 +659,26 @@ function timeUp() {
   answerInput.disabled = true;
   state.streak = 0;
   state.playerHp -= TIMEOUT_PENALTY;
-  addLog(`⏰ Trop lent ! La réponse était ${currentQuestion.answer}. Ton Calculomon perd ${TIMEOUT_PENALTY} PV !`);
-  showFeedback(`⏰ Trop tard ! C'était ${currentQuestion.answer}. −${TIMEOUT_PENALTY} PV`, "bad");
-  playerHitAnimation(TIMEOUT_PENALTY);
+  addLog(`⏰ Temps écoulé. ${currentQuestion.procedure}`);
+  showFeedback(`⏰ ${currentQuestion.procedure} (−${TIMEOUT_PENALTY} PV)`, "bad");
+  hitAnimation(playerSprite);
+  floatDamagePlayer(TIMEOUT_PENALTY);
   updatePlayerHp();
-  updateStats();
-  if (state.playerHp <= 0) {
-    gameOver();
-  } else {
-    setTimeout(newQuestion, 900);
-  }
+  if (state.playerHp <= 0) gameOver();
+  else setTimeout(newQuestion, 2600);
 }
 
-function defeatEnemy() {
-  awaitingAnswer = false;
-  clearInterval(timerId);
-  const gold = randInt(3, 7) + state.currentZone.difficulty;
-  state.gold += gold;
-  state.zoneKills++;
-  addLog(`🎉 ${enemy.name} est vaincu ! +${gold} or.`);
-  $("victory-text").textContent = `${enemy.name} est vaincu ! Tu gagnes ${gold} pièces d'or.`;
-  victoryOverlay.classList.remove("hidden");
-  answerInput.disabled = true;
-}
-
-function nextEnemy() {
-  victoryOverlay.classList.add("hidden");
-  // Soin progressif après chaque victoire (limité aux PV max)
-  state.playerHp = Math.min(PLAYER_HP, state.playerHp + 3);
-  updatePlayerHp();
-  updateStats();
-  spawnEnemy();
-}
-
-function gameOver() {
-  clearInterval(timerId);
-  awaitingAnswer = false;
-  answerInput.disabled = true;
-  updatePlayerHp();
-  gameoverOverlay.classList.remove("hidden");
-}
-
-function restart() {
-  state.gold = 0;
-  state.playerHp = PLAYER_HP;
-  state.streak = 0;
-  state.zoneKills = 0;
-  updatePlayerHp();
-  updateStats();
-  addLog("--- Nouvelle partie ---");
-  openZonePicker();
-}
-
-// ---------- UI helpers ----------
-function updateStats() {
-  statsEl.textContent = `Or : ${state.gold} · PV : ${Math.max(0, state.playerHp)}/${PLAYER_HP}`;
-}
-
-function showFeedback(msg, cls) {
-  feedback.textContent = msg;
-  feedback.className = cls;
-}
-
-function addLog(msg) {
-  const div = document.createElement("div");
-  div.textContent = msg;
-  logEl.prepend(div);
-  while (logEl.children.length > 30) logEl.removeChild(logEl.lastChild);
+function hitAnimation(sprite) {
+  sprite.classList.remove("hit");
+  void sprite.offsetWidth;
+  sprite.classList.add("hit");
 }
 
 function floatDamage(dmg, crit) {
   const el = document.createElement("div");
   el.className = "dmg-float";
   el.textContent = `-${dmg}${crit ? " 💥" : ""}`;
-  el.style.left = (40 + Math.random() * 20) + "%";
+  el.style.left = (15 + Math.random() * 15) + "%";
   el.style.color = crit ? "var(--crit)" : "#fff";
   battleScene.appendChild(el);
   setTimeout(() => el.remove(), 1000);
@@ -855,11 +690,104 @@ function floatDamage(dmg, crit) {
   }
 }
 
+function floatDamagePlayer(dmg) {
+  const el = document.createElement("div");
+  el.className = "dmg-float dmg-float-player";
+  el.textContent = `-${dmg}`;
+  el.style.left = (70 + Math.random() * 10) + "%";
+  battleScene.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+
+function defeatEnemy() {
+  clearInterval(timerId);
+  const gold = randInt(3, 7) + state.currentZone.difficulty;
+  state.gold += gold;
+  state.zoneKills++;
+  state.totalKills++;
+  addLog(`🎉 ${enemy.name} vaincu ! +${gold} or.`);
+  $("victory-text").textContent = `${enemy.name} est vaincu ! Tu gagnes ${gold} pièces d'or.`;
+  victoryOverlay.classList.remove("hidden");
+  saveState();
+}
+
+function nextEnemy() {
+  victoryOverlay.classList.add("hidden");
+  state.playerHp = Math.min(PLAYER_HP, state.playerHp + 3);
+  updatePlayerHp();
+  spawnEnemy();
+}
+
+function gameOver() {
+  clearInterval(timerId);
+  updatePlayerHp();
+  gameoverOverlay.classList.remove("hidden");
+  saveState();
+}
+
+function restart() {
+  state.playerHp = PLAYER_HP;
+  state.streak = 0;
+  updatePlayerHp();
+  addLog("--- Nouveau combat ! Chaque erreur apprend quelque chose ---");
+  openZonePicker();
+}
+
+// ---------- Écran de progrès / fluence ----------
+function openProgress() {
+  clearInterval(timerId);
+  awaitingAnswer = false;
+  const box = $("progress-details");
+  box.innerHTML = "";
+  let totalC = 0, totalMs = 0, attempts = 0;
+  for (const cat of CATS) {
+    const s = state.catStats[cat.id];
+    totalC += s.correct; totalMs += s.totalTimeMs; attempts += s.attempts;
+    const flu = s.attempts > 0 ? Math.round(s.correct / (s.totalTimeMs / 60000)) : 0;
+    const accuracy = s.attempts > 0 ? Math.round(s.correct / s.attempts * 100) : 0;
+    const row = document.createElement("div");
+    row.className = "progress-row";
+    row.innerHTML = `<strong>${cat.sprite} ${cat.label}</strong> — fluence : ${flu} ég./min · réussite : ${accuracy}% (${s.correct}/${s.attempts})
+      <div class="progress-bar-outer"><div class="progress-bar-inner" style="width:${Math.min(100, flu * 5)}%"></div></div>`;
+    box.appendChild(row);
+  }
+  const flu = totalMs > 0 ? Math.round(totalC / (totalMs / 60000)) : 0;
+  $("fluency-total").textContent = `Fluence globale : ${flu} égalités/min · ${totalC} bonnes réponses`;
+  progressOverlay.classList.remove("hidden");
+}
+
+// ---------- Pavé numérique tactile ----------
+function buildNumpad() {
+  const pad = $("numpad");
+  const keys = ["7", "8", "9", "4", "5", "6", "1", "2", "3", "0", "C", "OK"];
+  for (const k of keys) {
+    const b = document.createElement("button");
+    b.className = "num-btn";
+    b.textContent = k;
+    b.addEventListener("click", () => {
+      if (k === "C") { answerInput.value = ""; answerInput.focus(); }
+      else if (k === "OK") submitAnswer();
+      else { answerInput.value += k; answerInput.focus(); }
+    });
+    pad.appendChild(b);
+  }
+}
+
+// ---------- UI helpers ----------
+function updateStats() {
+  statsEl.textContent = `PV : ${Math.max(0, state.playerHp)}/${PLAYER_HP} · Or : ${state.gold} · Victoires : ${state.totalKills}`;
+}
+function showFeedback(msg, cls) { feedback.textContent = msg; feedback.className = cls; }
+function addLog(msg) {
+  const div = document.createElement("div");
+  div.textContent = msg;
+  logEl.prepend(div);
+  while (logEl.children.length > 30) logEl.removeChild(logEl.lastChild);
+}
+
 // ---------- Événements ----------
 $("btn-attack").addEventListener("click", submitAnswer);
-answerInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") submitAnswer();
-});
+answerInput.addEventListener("keydown", e => { if (e.key === "Enter") submitAnswer(); });
 $("btn-flee").addEventListener("click", () => {
   if (!awaitingAnswer) return;
   clearInterval(timerId);
@@ -867,12 +795,18 @@ $("btn-flee").addEventListener("click", () => {
   addLog(`🏃 Tu fuis ${enemy.name}...`);
   spawnEnemy();
 });
-$("btn-change-zone").addEventListener("click", openZonePicker);
+$("btn-map").addEventListener("click", openZonePicker);
+$("btn-progress").addEventListener("click", openProgress);
+$("btn-close-progress").addEventListener("click", () => {
+  progressOverlay.classList.add("hidden");
+  if (state.currentZone && !enemy) spawnEnemy();
+});
 $("btn-continue").addEventListener("click", nextEnemy);
 $("btn-restart").addEventListener("click", restart);
 
 // ---------- Init ----------
-buildZoneButtons();
+loadState();
+buildNumpad();
 updatePlayerHp();
 updateStats();
 addLog("--- Bienvenue dans Calculomon ! ---");
