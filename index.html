@@ -344,21 +344,93 @@
 <script>
 "use strict";
 
-// ---------- Créatures ----------
+// ---------- Créatures (dessins SVG originaux, style Pokémon) ----------
+// Chaque créature : nom, PV, et un "art" = couleurs + attribut distinctif.
 const CREATURES = [
-  { name: "Chatomon",     sprite: "🐱", baseHp: 10 },
-  { name: "Oiseaumon",    sprite: "🐦", baseHp: 12 },
-  { name: "Renardmon",    sprite: "🦊", baseHp: 14 },
-  { name: "Crapaudmon",   sprite: "🐸", baseHp: 16 },
-  { name: "Papillonmon",  sprite: "🦋", baseHp: 18 },
-  { name: "Lapinmon",     sprite: "🐰", baseHp: 20 },
-  { name: "Tortuemon",    sprite: "🐢", baseHp: 22 },
-  { name: "Abeillemon",   sprite: "🐝", baseHp: 24 },
-  { name: "Pandamon",     sprite: "🐼", baseHp: 28 },
-  { name: "Lionmon",      sprite: "🦁", baseHp: 32 },
-  { name: "Aiglemon",     sprite: "🦅", baseHp: 36 },
-  { name: "Dragonmon",    sprite: "🐲", baseHp: 50 }
+  { name: "Blobix",       baseHp: 10, art: { body: "#7ec850", belly: "#d8f0a0", feature: "none",    outline: "#2d5a14" } },
+  { name: "Orelon",       baseHp: 12, art: { body: "#f4a460", belly: "#ffe0b0", feature: "ears",   outline: "#7a4a10" } },
+  { name: "Cornix",       baseHp: 14, art: { body: "#e86a5e", belly: "#ffd0c0", feature: "horn",   outline: "#7a2018" } },
+  { name: "Piquantix",    baseHp: 16, art: { body: "#9b6fd4", belly: "#e0d0f4", feature: "spikes", outline: "#3f2160" } },
+  { name: "Nagou",        baseHp: 18, art: { body: "#4fc3f7", belly: "#d0ecfa", feature: "fins",   outline: "#14527a" } },
+  { name: "Antenix",      baseHp: 20, art: { body: "#f7d774", belly: "#fff0c0", feature: "antenna", outline: "#7a5a10" } },
+  { name: "Ailix",        baseHp: 22, art: { body: "#f0f0f0", belly: "#ffffff", feature: "wings",  outline: "#555577" } },
+  { name: "Flamou",       baseHp: 24, art: { body: "#ff8c42", belly: "#ffd8b0", feature: "flame",  outline: "#8a3a08" } },
+  { name: "Toctoc",       baseHp: 28, art: { body: "#a8a8a8", belly: "#d8d8d8", feature: "bolt",   outline: "#3a3a3a" } },
+  { name: "Rosmon",       baseHp: 32, art: { body: "#ff6fae", belly: "#ffd0e8", feature: "crown",  outline: "#8a1a54" } },
+  { name: "Stellix",      baseHp: 36, art: { body: "#5e6fa8", belly: "#c8d0f0", feature: "star",   outline: "#232c4d" } },
+  { name: "Dragofex",     baseHp: 50, art: { body: "#4d8f5e", belly: "#c8e8b0", feature: "dragon", outline: "#123a1a" } }
 ];
+
+// Génère le SVG d'une créature à partir de sa config (style Pokémon : gros yeux, ventre clair, contour épais)
+function creatureSVG(c) {
+  const a = c.art;
+  const O = a.outline;
+  let extra = "";
+  switch (a.feature) {
+    case "ears":
+      extra = `<path d="M28 40 Q18 14 40 24 Z" fill="${a.body}" stroke="${O}" stroke-width="4"/>
+               <path d="M72 40 Q82 14 60 24 Z" fill="${a.body}" stroke="${O}" stroke-width="4"/>`;
+      break;
+    case "horn":
+      extra = `<path d="M50 18 L42 2 L58 2 Z" fill="#fff" stroke="${O}" stroke-width="4"/>`;
+      break;
+    case "spikes":
+      extra = `<path d="M30 34 L26 16 L40 28 Z" fill="${a.body}" stroke="${O}" stroke-width="4"/>
+               <path d="M50 26 L50 6 L60 24 Z" fill="${a.body}" stroke="${O}" stroke-width="4"/>
+               <path d="M70 34 L74 16 L60 28 Z" fill="${a.body}" stroke="${O}" stroke-width="4"/>`;
+      break;
+    case "fins":
+      extra = `<path d="M16 55 Q0 50 8 68 Z" fill="${a.body}" stroke="${O}" stroke-width="4"/>
+               <path d="M84 55 Q100 50 92 68 Z" fill="${a.body}" stroke="${O}" stroke-width="4"/>`;
+      break;
+    case "antenna":
+      extra = `<line x1="42" y1="26" x2="34" y2="8" stroke="${O}" stroke-width="4"/>
+               <circle cx="33" cy="7" r="6" fill="#ffcd75" stroke="${O}" stroke-width="3"/>
+               <line x1="58" y1="26" x2="66" y2="8" stroke="${O}" stroke-width="4"/>
+               <circle cx="67" cy="7" r="6" fill="#ffcd75" stroke="${O}" stroke-width="3"/>`;
+      break;
+    case "wings":
+      extra = `<path d="M20 50 Q-2 30 6 10 Q22 24 30 42 Z" fill="#dde4ff" stroke="${O}" stroke-width="4"/>
+               <path d="M80 50 Q102 30 94 10 Q78 24 70 42 Z" fill="#dde4ff" stroke="${O}" stroke-width="4"/>`;
+      break;
+    case "flame":
+      extra = `<path d="M50 20 Q42 8 50 0 Q58 8 50 20 Z" fill="#ffcd75" stroke="${O}" stroke-width="3"/>
+               <path d="M38 26 Q30 16 38 8 Q46 16 38 26 Z" fill="#ff9f43" stroke="${O}" stroke-width="3"/>`;
+      break;
+    case "bolt":
+      extra = `<path d="M52 4 L38 30 L48 30 L44 48 L62 22 L50 22 Z" fill="#ffcd75" stroke="${O}" stroke-width="3"/>`;
+      break;
+    case "crown":
+      extra = `<path d="M30 22 L26 6 L40 14 L50 2 L60 14 L74 6 L70 22 Z" fill="#ffcd75" stroke="${O}" stroke-width="4"/>`;
+      break;
+    case "star":
+      extra = `<path d="M50 0 L56 14 L72 14 L60 24 L64 40 L50 32 L36 40 L40 24 L28 14 L44 14 Z" fill="#ffcd75" stroke="${O}" stroke-width="3"/>`;
+      break;
+    case "dragon":
+      extra = `<path d="M22 30 Q6 10 30 12 Q24 24 32 28 Z" fill="${a.body}" stroke="${O}" stroke-width="4"/>
+               <path d="M78 30 Q94 10 70 12 Q76 24 68 28 Z" fill="${a.body}" stroke="${O}" stroke-width="4"/>
+               <path d="M50 16 L42 4 L50 8 L58 4 Z" fill="#fff" stroke="${O}" stroke-width="3"/>`;
+      break;
+    default:
+      extra = `<circle cx="30" cy="20" r="5" fill="#fff" stroke="${O}" stroke-width="3" opacity=".7"/>
+               <circle cx="70" cy="14" r="3" fill="#fff" stroke="${O}" stroke-width="3" opacity=".7"/>`;
+  }
+  return `<svg viewBox="0 0 100 104" width="92" height="96" aria-label="${c.name}">
+    ${extra}
+    <ellipse cx="50" cy="58" rx="36" ry="38" fill="${a.body}" stroke="${O}" stroke-width="4"/>
+    <ellipse cx="50" cy="72" rx="22" ry="20" fill="${a.belly}" stroke="${O}" stroke-width="3"/>
+    <circle cx="36" cy="46" r="10" fill="#fff" stroke="${O}" stroke-width="3"/>
+    <circle cx="64" cy="46" r="10" fill="#fff" stroke="${O}" stroke-width="3"/>
+    <circle cx="38" cy="48" r="4.5" fill="#123"/>
+    <circle cx="62" cy="48" r="4.5" fill="#123"/>
+    <circle cx="39.5" cy="46.5" r="1.5" fill="#fff"/>
+    <circle cx="63.5" cy="46.5" r="1.5" fill="#fff"/>
+    <ellipse cx="26" cy="60" rx="5" ry="3" fill="#ff9f43" opacity=".8"/>
+    <ellipse cx="74" cy="60" rx="5" ry="3" fill="#ff9f43" opacity=".8"/>
+    <ellipse cx="34" cy="98" rx="11" ry="6" fill="${a.body}" stroke="${O}" stroke-width="3"/>
+    <ellipse cx="66" cy="98" rx="11" ry="6" fill="${a.body}" stroke="${O}" stroke-width="3"/>
+  </svg>`;
+}
 
 // ---------- Catégories de faits numériques (progression CP → CE1) ----------
 // type de génération + procédure affichée en cas d'erreur
@@ -632,7 +704,7 @@ function spawnEnemy() {
   const c = CREATURES[tier];
   const hp = Math.round(c.baseHp * (1 + state.zoneKills * 0.08));
   enemy = { ...c, hp, maxHp: hp };
-  enemySprite.textContent = c.sprite;
+  enemySprite.innerHTML = creatureSVG(c);
   enemySprite.classList.remove("hit", "spawn");
   void enemySprite.offsetWidth;
   enemySprite.classList.add("spawn");
