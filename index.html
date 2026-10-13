@@ -79,9 +79,8 @@
   #battle-scene {
     position: relative; height: 250px;
     background: linear-gradient(#3fa945 0%, #3fa945 14%, #2f8fd6 14%, #2f8fd6 45%, #4fc3f7 45%, #4fc3f7 100%);
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius);
-    box-shadow: inset 0 0 0 3px rgba(255,255,255,.06), var(--shadow-sm);
+    border: none;
+    border-radius: var(--radius) var(--radius) 0 0;
     overflow: hidden;
     transition: background .5s;
   }
@@ -193,18 +192,12 @@
   #battle-area {
     background: linear-gradient(180deg, #1e293b, #172033);
     border: 1px solid var(--card-border);
+    border-top: none;
     box-shadow: var(--shadow-sm);
-    border-radius: var(--radius);
+    border-radius: 0 0 var(--radius) var(--radius);
     padding: 16px;
     display: flex; flex-direction: column; gap: 12px;
     color: var(--text);
-  }
-  #question {
-    font-size: clamp(1.6rem, 5vw, 2rem);
-    font-weight: 800; text-align: center;
-    color: #f8fafc; letter-spacing: .04em;
-    font-variant-numeric: tabular-nums;
-    text-shadow: 0 2px 8px rgba(0,0,0,.4);
   }
   #answer-input {
     font-size: 1.5rem; font-weight: 700; text-align: center; padding: 12px;
@@ -571,18 +564,18 @@ function applyEnvironment(envId) {
 // ---------- Créatures (dessins SVG originaux, style Pokémon) ----------
 // Chaque créature : nom, PV, et un "art" = couleurs + attribut distinctif.
 const CREATURES = [
-  { name: "Blobix",       baseHp: 10, art: { body: "#7ec850", belly: "#d8f0a0", feature: "none",    outline: "#2d5a14" } },
-  { name: "Orelon",       baseHp: 12, art: { body: "#f4a460", belly: "#ffe0b0", feature: "ears",   outline: "#7a4a10" } },
-  { name: "Cornix",       baseHp: 14, art: { body: "#e86a5e", belly: "#ffd0c0", feature: "horn",   outline: "#7a2018" } },
-  { name: "Piquantix",    baseHp: 16, art: { body: "#9b6fd4", belly: "#e0d0f4", feature: "spikes", outline: "#3f2160" } },
-  { name: "Nagou",        baseHp: 18, art: { body: "#4fc3f7", belly: "#d0ecfa", feature: "fins",   outline: "#14527a" } },
-  { name: "Antenix",      baseHp: 20, art: { body: "#f7d774", belly: "#fff0c0", feature: "antenna", outline: "#7a5a10" } },
-  { name: "Ailix",        baseHp: 22, art: { body: "#f0f0f0", belly: "#ffffff", feature: "wings",  outline: "#555577" } },
-  { name: "Flamou",       baseHp: 24, art: { body: "#ff8c42", belly: "#ffd8b0", feature: "flame",  outline: "#8a3a08" } },
-  { name: "Toctoc",       baseHp: 28, art: { body: "#a8a8a8", belly: "#d8d8d8", feature: "bolt",   outline: "#3a3a3a" } },
-  { name: "Rosmon",       baseHp: 32, art: { body: "#ff6fae", belly: "#ffd0e8", feature: "crown",  outline: "#8a1a54" } },
-  { name: "Stellix",      baseHp: 36, art: { body: "#5e6fa8", belly: "#c8d0f0", feature: "star",   outline: "#232c4d" } },
-  { name: "Dragofex",     baseHp: 50, art: { body: "#4d8f5e", belly: "#c8e8b0", feature: "dragon", outline: "#123a1a" } }
+  { name: "Blobix",       size: 78, baseHp: 10, art: { body: "#7ec850", belly: "#d8f0a0", feature: "none",    outline: "#2d5a14" } },
+  { name: "Orelon",       size: 88, baseHp: 12, art: { body: "#f4a460", belly: "#ffe0b0", feature: "ears",   outline: "#7a4a10" } },
+  { name: "Cornix",       size: 84, baseHp: 14, art: { body: "#e86a5e", belly: "#ffd0c0", feature: "horn",   outline: "#7a2018" } },
+  { name: "Piquantix",    size: 92, baseHp: 16, art: { body: "#9b6fd4", belly: "#e0d0f4", feature: "spikes", outline: "#3f2160" } },
+  { name: "Nagou",        size: 86, baseHp: 18, art: { body: "#4fc3f7", belly: "#d0ecfa", feature: "fins",   outline: "#14527a" } },
+  { name: "Antenix",      size: 80, baseHp: 20, art: { body: "#f7d774", belly: "#fff0c0", feature: "antenna", outline: "#7a5a10" } },
+  { name: "Ailix",        size: 104, baseHp: 22, art: { body: "#f0f0f0", belly: "#ffffff", feature: "wings",  outline: "#555577" } },
+  { name: "Flamou",       size: 90, baseHp: 24, art: { body: "#ff8c42", belly: "#ffd8b0", feature: "flame",  outline: "#8a3a08" } },
+  { name: "Toctoc",       size: 96, baseHp: 28, art: { body: "#a8a8a8", belly: "#d8d8d8", feature: "bolt",   outline: "#3a3a3a" } },
+  { name: "Rosmon",       size: 100, baseHp: 32, art: { body: "#ff6fae", belly: "#ffd0e8", feature: "crown",  outline: "#8a1a54" } },
+  { name: "Stellix",      size: 108, baseHp: 36, art: { body: "#5e6fa8", belly: "#c8d0f0", feature: "star",   outline: "#232c4d" } },
+  { name: "Dragofex",     size: 122, baseHp: 50, art: { body: "#4d8f5e", belly: "#c8e8b0", feature: "dragon", outline: "#123a1a" } }
 ];
 
 // Génère le SVG d'une créature à partir de sa config (style Pokémon : gros yeux, ventre clair, contour épais)
@@ -639,7 +632,10 @@ function creatureSVG(c) {
       extra = `<circle cx="30" cy="20" r="5" fill="#fff" stroke="${O}" stroke-width="3" opacity=".7"/>
                <circle cx="70" cy="14" r="3" fill="#fff" stroke="${O}" stroke-width="3" opacity=".7"/>`;
   }
-  return `<svg viewBox="0 0 100 104" width="92" height="96" aria-label="${c.name}">
+  const size = c.art.size || 92;
+  const hueShift = Math.round((Math.random() * 2 - 1) * 18);
+  const shift = hueShift === 0 ? "" : ` filter="hue-rotate(${hueShift}deg) saturate(${(1 + Math.random() * 0.2).toFixed(2)})"`;
+  return `<svg viewBox="0 0 100 104" width="${size}" height="${Math.round(size * 1.04)}"${shift} aria-label="${c.name}">
     ${extra}
     <ellipse cx="50" cy="58" rx="36" ry="38" fill="${a.body}" stroke="${O}" stroke-width="4"/>
     <ellipse cx="50" cy="72" rx="22" ry="20" fill="${a.belly}" stroke="${O}" stroke-width="3"/>
