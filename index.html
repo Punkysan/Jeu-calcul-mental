@@ -176,16 +176,6 @@
   .hp-bar-outer { width: 100%; height: 14px; background: #94a3b8; border: 2px solid #0f172a; border-radius: 4px; margin-top: 6px; overflow: hidden; }
   .hp-bar-inner { height: 100%; background: #22c55e; transition: width .25s, background .25s; }
   #hp-text, .hp-text-small { font-size: .82rem; color: #0f172a; margin-top: 4px; text-align: right; font-weight: 700; }
-  #pool-bars {
-    position: absolute; bottom: 0; left: 0; right: 0; height: 26px;
-    display: flex; border-top: 1px solid rgba(0,0,0,.6); z-index: 5;
-  }
-  .pool-bar { flex: 1; background: var(--red-deep); overflow: hidden; }
-  #player-pool-bar { background: #dc2626; border-right: 1px solid rgba(0,0,0,.6); }
-  .pool-bar-text {
-    font-size: .8rem; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.6);
-    text-align: center; line-height: 26px; letter-spacing: .05em; white-space: nowrap;
-  }
   .dmg-float {
     position: absolute; font-weight: 800; font-size: 1.5rem;
     animation: floatUpEnemy 1s forwards; pointer-events: none;
@@ -384,9 +374,6 @@
       <div class="hp-bar-outer"><div class="hp-bar-inner" id="player-hp"></div></div>
       <div class="hp-text-small" id="player-hp-text">30 / 30 PV</div>
     </div>
-    <div id="pool-bars">
-      <div class="pool-bar" id="player-pool-bar"><span class="pool-bar-text" id="player-pool-text">30 / 30</span></div>
-      <div class="pool-bar" id="enemy-pool-bar"><span class="pool-bar-text" id="enemy-pool-text">— / —</span></div>
     </div>
   </div>
 
@@ -946,20 +933,24 @@ function spawnEnemy() {
   setTimeout(newQuestion, 350);
 }
 
+
+function hpColor(pct) {
+  const h = Math.max(0, Math.min(120, 120 * pct / 100));
+  return `hsl(${h}, 75%, 45%)`;
+}
+
 function updateEnemyHp() {
   const pct = Math.max(0, (enemy.hp / enemy.maxHp) * 100);
   enemyHpBar.style.width = pct + "%";
-  enemyHpBar.style.background = pct > 50 ? "var(--hp-green)" : pct > 20 ? "var(--hp-yellow)" : "var(--hp-red)";
+  enemyHpBar.style.background = hpColor(pct);
   hpText.textContent = `${Math.max(0, Math.ceil(enemy.hp))} / ${enemy.maxHp} PV`;
-  $("enemy-pool-text").textContent = `${Math.max(0, Math.ceil(enemy.hp))} / ${enemy.maxHp}`;
 }
 
 function updatePlayerHp() {
   const pct = Math.max(0, (state.playerHp / PLAYER_HP) * 100);
   playerHpBar.style.width = pct + "%";
-  playerHpBar.style.background = pct > 50 ? "var(--hp-green)" : pct > 20 ? "var(--hp-yellow)" : "var(--hp-red)";
+  playerHpBar.style.background = hpColor(pct);
   playerHpText.textContent = `${Math.max(0, state.playerHp)} / ${PLAYER_HP} PV`;
-  $("player-pool-text").textContent = `${Math.max(0, state.playerHp)} / ${PLAYER_HP}`;
 }
 
 // ---------- Combat ----------
