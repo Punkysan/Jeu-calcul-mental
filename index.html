@@ -380,7 +380,7 @@
 
   <div id="battle-area">
     <div id="question">2 + 3 = ?</div>
-    <input id="answer-input" type="number" autocomplete="off" inputmode="numeric" placeholder="Ta réponse...">
+    <input id="answer-input" type="text" autocomplete="off" inputmode="numeric" pattern="[0-9]*" placeholder="Ta réponse...">
     <div id="numpad"></div>
     <div id="timer-bar-outer"><div id="timer-bar-inner"></div></div>
     <div id="feedback"></div>
@@ -947,7 +947,7 @@ function updateEnemyHp() {
   const pct = Math.max(0, (enemy.hp / enemy.maxHp) * 100);
   enemyHpBar.style.width = pct + "%";
   enemyHpBar.style.background = hpColor(pct);
-  hpText.textContent = `${Math.max(0, Math.ceil(enemy.hp))} / ${enemy.maxHp} PV`;
+  hpText.textContent = `${Math.max(0, Math.ceil(enemy.hp)).toLocaleString("fr-FR")} / ${enemy.maxHp.toLocaleString("fr-FR")} PV`;
 }
 
 function updatePlayerHp() {
@@ -986,9 +986,9 @@ function tickTimer() {
 
 function submitAnswer() {
   if (!awaitingAnswer) return;
-  const val = answerInput.value.trim();
-  if (val === "") return;
-  const num = Number(val);
+  const val = answerInput.value.trim().replace(/[\s,\.]/g, "");
+  if (val === "" || !/^\d+$/.test(val)) return;
+  const num = parseInt(val, 10);
   const elapsed = performance.now() - questionStart;
   currentQuestion.elapsed = elapsed;
   clearInterval(timerId);
@@ -1146,7 +1146,7 @@ function openProgress() {
     box.appendChild(row);
   }
   const flu = totalMs > 0 ? Math.round(totalC / (totalMs / 60000)) : 0;
-  $("fluency-total").textContent = `Fluence globale : ${flu} égalités/min · ${totalC} bonnes réponses`;
+  $("fluency-total").textContent = `Fluence globale : ${flu.toLocaleString("fr-FR")} égalités/min · ${totalC.toLocaleString("fr-FR")} bonnes réponses`;
   progressOverlay.classList.remove("hidden");
 }
 
@@ -1240,7 +1240,7 @@ document.addEventListener("keydown", e => {
 
 // ---------- UI helpers ----------
 function updateStats() {
-  statsEl.textContent = `PV : ${Math.max(0, state.playerHp)}/${PLAYER_HP} · Victoires : ${state.totalKills}`;
+  statsEl.textContent = `PV : ${Math.max(0, state.playerHp)}/${PLAYER_HP} · Victoires : ${state.totalKills.toLocaleString("fr-FR")}`;
 }
 function showFeedback(msg, cls) { feedback.textContent = msg; feedback.className = cls; }
 function addLog(msg) { }
