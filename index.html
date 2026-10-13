@@ -38,13 +38,18 @@
   .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
   .zone-badge { background: var(--panel-light); padding: 4px 10px; border-radius: 6px; border: 2px solid #000; font-weight: bold; }
   #stats { font-size: 0.9rem; }
-  /* ---- Scène de combat piscine façon Pokéclicker ---- */
+  /* ---- Scène de combat (environnement dynamique) ---- */
   #battle-scene {
     position: relative; height: 240px;
     background: linear-gradient(#3fa945 0%, #3fa945 14%, #2f8fd6 14%, #2f8fd6 45%, #4fc3f7 45%, #4fc3f7 100%);
     border: 3px solid #000; border-radius: 8px;
     overflow: hidden;
+    transition: background .5s;
   }
+  #decor {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  }
+  #decor svg { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; }
   .pool-edge {
     position: absolute; top: 0; left: 0; right: 0; height: 14%;
     background: repeating-linear-gradient(90deg, #3fa945 0px, #3fa945 18px, #2d8a35 18px, #2d8a35 36px);
@@ -238,6 +243,7 @@
   </div>
 
   <div id="battle-scene">
+    <div id="decor"></div>
     <div class="pool-edge"></div>
     <div class="water-wave" id="wave-1"></div>
     <div class="water-wave" id="wave-2"></div>
@@ -343,6 +349,144 @@
 
 <script>
 "use strict";
+
+// ---------- Environnements par zone (décors SVG, palette, plateformes) ----------
+const ENVIRONMENTS = {
+  pool: {
+    bg: "linear-gradient(#3fa945 0%, #3fa945 14%, #2f8fd6 14%, #2f8fd6 45%, #4fc3f7 45%, #4fc3f7 100%)",
+    edge: true, waves: true,
+    platform: "rgba(255,255,255,.25)",
+    decor: `
+      <ellipse cx="85" cy="30" rx="30" ry="12" fill="rgba(255,255,255,.5)"/>
+      <ellipse cx="250" cy="22" rx="40" ry="14" fill="rgba(255,255,255,.4)"/>`
+  },
+  meadow: {
+    bg: "linear-gradient(#7ec8f0 0%, #7ec8f0 45%, #8fd068 45%, #8fd068 100%)",
+    edge: false, waves: false,
+    platform: "#58a038",
+    decor: `
+      <circle cx="440" cy="55" r="34" fill="#ffdf70" stroke="#e8b830" stroke-width="4"/>
+      <path d="M0 108 Q40 78 80 108 Z" fill="#5a9440"/>
+      <path d="M60 108 Q100 80 140 108 Z" fill="#5a9440"/>
+      <path d="M20 115 Q30 95 40 115 Z" fill="#4a8435"/> <text x="30" y="113" font-size="12">🌸</text>
+      <text x="180" y="112" font-size="16">🌷</text> <text x="240" y="108" font-size="16">🌻</text>
+      <path d="M120 108 L126 92 L132 108 Z" fill="#5a9440"/>`
+  },
+  mountain: {
+    bg: "linear-gradient(#8fd4f7 0%, #8fd4f7 40%, #b8e4fa 40%, #b8e4fa 100%)",
+    edge: false, waves: false,
+    platform: "#9c8f7a",
+    decor: `
+      <path d="M0 108 L80 30 L160 108 Z" fill="#7a8898" stroke="#4a5868" stroke-width="3"/>
+      <path d="M60 108 L130 45 L200 108 Z" fill="#9aacbe" stroke="#4a5868" stroke-width="3"/>
+      <path d="M118 55 L130 45 L142 55 L130 62 Z" fill="#fff"/>
+      <path d="M300 108 L390 35 L480 108 Z" fill="#7a8898" stroke="#4a5868" stroke-width="3"/>
+      <path d="M375 48 L390 35 L405 48 L390 56 Z" fill="#fff"/>
+      <circle cx="430" cy="40" r="22" fill="#ffdf70" opacity=".9"/>`
+  },
+  night: {
+    bg: "linear-gradient(#141c3a 0%, #141c3a 50%, #232f5e 50%, #232f5e 100%)",
+    edge: false, waves: false,
+    platform: "#2a3558",
+    decor: `
+      <circle cx="70" cy="40" r="20" fill="#f4f0d8"/>
+      <circle cx="78" cy="34" r="17" fill="#141c3a"/>
+      <circle cx="150" cy="25" r="2.5" fill="#fff"/><circle cx="220" cy="45" r="2" fill="#fff"/>
+      <circle cx="290" cy="20" r="2.5" fill="#fff"/><circle cx="350" cy="50" r="2" fill="#fff"/>
+      <circle cx="410" cy="30" r="2.5" fill="#fff"/><circle cx="460" cy="55" r="2" fill="#fff"/>
+      <circle cx="120" cy="60" r="1.5" fill="#fff"/><circle cx="380" cy="65" r="1.5" fill="#fff"/>
+      <path d="M0 108 Q50 92 100 108 Z" fill="#1a2444"/>`
+  },
+  forest: {
+    bg: "linear-gradient(#a8d8f0 0%, #a8d8f0 38%, #78b050 38%, #78b050 100%)",
+    edge: false, waves: false,
+    platform: "#4a7a30",
+    decor: `
+      <rect x="30" y="55" width="10" height="55" fill="#6a4a2a"/>
+      <circle cx="35" cy="45" r="30" fill="#3f8a3f" stroke="#2a5a2a" stroke-width="3"/>
+      <rect x="130" y="65" width="9" height="45" fill="#6a4a2a"/>
+      <circle cx="134" cy="52" r="24" fill="#4a9a4a" stroke="#2a5a2a" stroke-width="3"/>
+      <rect x="400" y="50" width="11" height="60" fill="#6a4a2a"/>
+      <circle cx="405" cy="38" r="33" fill="#3f8a3f" stroke="#2a5a2a" stroke-width="3"/>`
+  },
+  cave: {
+    bg: "linear-gradient(#2a2a3a 0%, #2a2a3a 50%, #3a3a4e 50%, #3a3a4e 100%)",
+    edge: false, waves: false,
+    platform: "#555566",
+    decor: `
+      <path d="M0 0 L0 40 Q30 30 50 55 L50 0 Z" fill="#1a1a26"/>
+      <path d="M480 0 L480 50 Q450 40 430 60 L430 0 Z" fill="#1a1a26"/>
+      <path d="M180 0 L180 25 Q200 15 215 35 L215 0 Z" fill="#1a1a26"/>
+      <path d="M330 0 L330 30 Q350 20 360 45 L360 0 Z" fill="#1a1a26"/>
+      <circle cx="80" cy="70" r="5" fill="#7ec8f0" opacity=".5"/>
+      <circle cx="300" cy="85" r="4" fill="#a8e8b8" opacity=".5"/>
+      <circle cx="420" cy="75" r="5" fill="#e8c8f0" opacity=".5"/>`
+  },
+  desert: {
+    bg: "linear-gradient(#ffd98a 0%, #ffd98a 50%, #f0c060 50%, #f0c060 100%)",
+    edge: false, waves: false,
+    platform: "#d8a850",
+    decor: `
+      <circle cx="430" cy="45" r="24" fill="#ffb347"/>
+      <path d="M0 108 Q120 88 240 108 Z" fill="#e8b858"/>
+      <path d="M60 108 L60 75 M60 88 Q42 82 60 88 Q78 82 60 88 M60 78 Q46 72 60 78 Q74 72 60 78" stroke="#4a8a3a" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M150 108 L150 84 M150 94 Q136 90 150 94 Q164 90 150 94" stroke="#4a8a3a" stroke-width="4" fill="none" stroke-linecap="round"/>`
+  },
+  city: {
+    bg: "linear-gradient(#a8c8f0 0%, #a8c8f0 45%, #8a9ab8 45%, #8a9ab8 100%)",
+    edge: false, waves: false,
+    platform: "#787888",
+    decor: `
+      <rect x="20" y="45" width="45" height="65" fill="#b8a898" stroke="#6a5a4a" stroke-width="3"/>
+      <rect x="90" y="30" width="55" height="80" fill="#a89880" stroke="#6a5a4a" stroke-width="3"/>
+      <rect x="380" y="50" width="50" height="60" fill="#b8a898" stroke="#6a5a4a" stroke-width="3"/>
+      <rect x="440" y="35" width="40" height="75" fill="#a89880" stroke="#6a5a4a" stroke-width="3"/>
+      <rect x="30" y="58" width="10" height="10" fill="#f4e0a0"/><rect x="48" y="58" width="10" height="10" fill="#f4e0a0"/>
+      <rect x="100" y="45" width="10" height="10" fill="#f4e0a0"/><rect x="120" y="45" width="10" height="10" fill="#f4e0a0"/><rect x="140" y="45" width="10" height="10" fill="#f4e0a0"/>
+      <rect x="390" y="62" width="10" height="10" fill="#f4e0a0"/><rect x="450" y="50" width="9" height="9" fill="#f4e0a0"/><rect x="464" y="50" width="9" height="9" fill="#f4e0a0"/>`
+  },
+  sky: {
+    bg: "linear-gradient(#4fa8e8 0%, #4fa8e8 45%, #a8d8f8 45%, #a8d8f8 100%)",
+    edge: false, waves: false,
+    platform: "rgba(255,255,255,.6)",
+    decor: `
+      <ellipse cx="90" cy="35" rx="32" ry="14" fill="#fff" opacity=".95"/>
+      <ellipse cx="120" cy="30" rx="22" ry="11" fill="#fff" opacity=".95"/>
+      <ellipse cx="330" cy="55" rx="36" ry="15" fill="#fff" opacity=".9"/>
+      <ellipse cx="362" cy="48" rx="20" ry="10" fill="#fff" opacity=".9"/>
+      <circle cx="450" cy="30" r="20" fill="#ffdf70"/>`
+  }
+};
+
+// Attribution d'un environnement à chaque catégorie pédagogique
+const ZONE_ENV = {
+  cp_comp10: "pool",
+  cp_double: "mountain",
+  cp_half: "night",
+  cp_decomp: "meadow",
+  cp_table: "meadow",
+  ce1_addboth: "forest",
+  ce1_mul2: "forest",
+  ce1_mul5: "forest",
+  ce1_mul10: "city",
+  ce1_tens: "desert"
+};
+
+function applyEnvironment(envId) {
+  const env = ENVIRONMENTS[envId] || ENVIRONMENTS.pool;
+  battleScene.style.background = env.bg;
+  const edge = battleScene.querySelector(".pool-edge");
+  const w1 = $("wave-1"), w2 = $("wave-2");
+  edge.style.display = env.edge ? "block" : "none";
+  w1.style.display = env.waves ? "block" : "none";
+  w2.style.display = env.waves ? "block" : "none";
+  const decor = $("decor");
+  decor.innerHTML = `<svg viewBox="0 0 480 108" preserveAspectRatio="xMidYMax slice">${env.decor}</svg>`;
+  document.querySelectorAll(".platform").forEach(p => {
+    p.style.background = env.platform;
+    p.style.borderColor = env.waves || envId === "sky" ? "rgba(255,255,255,.5)" : "#000";
+  });
+}
 
 // ---------- Créatures (dessins SVG originaux, style Pokémon) ----------
 // Chaque créature : nom, PV, et un "art" = couleurs + attribut distinctif.
@@ -680,6 +824,7 @@ function selectZone(zone) {
   state.currentZone = zone;
   state.zoneKills = 0;
   state.streak = 0;
+  applyEnvironment(ZONE_ENV[zone.id]);
   zoneName.textContent = `${zone.label} (${zone.grade})`;
   addLog(`🚶 Tu te déplaces vers : ${zone.label}`);
   saveState();

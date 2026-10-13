@@ -37,6 +37,8 @@ Basé sur les programmes et repères de progression officiels : mémorisation et
 
 Chaque catégorie propose les calculs **dans les deux sens** : résultat inconnu (`7 × 8 = ?`) et égalité à trou (`7 × ? = 42`, `4 + ? = 12`).
 
+Chaque zone a son **environnement de combat** propre (décors SVG dessinés) : piscine 💧 pour les compléments à 10, montagnes enneigées 🏔️ pour les doubles, clairière de nuit 🌌 pour les moitiés, prairie fleurie pour les décompositions, forêt pour les tables ×2 et ×5, ville des dizaines, désert... Les Calculomon évoluent dans des mondes variés, style Pokémon.
+
 ## 🧠 Principes pédagogiques
 
 - **Rétroaction immédiate** : en cas d'erreur, affichage de la **procédure** efficace (aller à la dizaine, décomposition...), pas seulement le résultat.
