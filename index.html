@@ -239,7 +239,7 @@
 <div id="game">
   <div class="row">
     <span class="zone-badge" id="zone-name">Choisis ta zone !</span>
-    <span id="stats">PV : 30/30 · Or : 0</span>
+    <span id="stats">PV : 30/30</span>
   </div>
 
   <div id="battle-scene">
@@ -605,7 +605,6 @@ const TIMEOUT_PENALTY = 3;
 
 // ---------- État ----------
 let state = {
-  gold: 0,
   playerHp: PLAYER_HP,
   streak: 0,
   totalKills: 0,
@@ -781,7 +780,6 @@ function loadState() {
     if (!raw) return;
     const saved = JSON.parse(raw);
     if (saved && saved.catStats) {
-      state.gold = saved.gold || 0;
       state.totalKills = saved.totalKills || 0;
       state.catStats = saved.catStats;
       // fusion défensive avec les catégories par défaut
@@ -1012,13 +1010,11 @@ function floatDamagePlayer(dmg) {
 
 function defeatEnemy() {
   clearInterval(timerId);
-  const gold = randInt(3, 7) + state.currentZone.difficulty;
-  state.gold += gold;
   state.zoneKills++;
   state.totalKills++;
   SFX.victory();
-  addLog(`🎉 ${enemy.name} vaincu ! +${gold} or.`);
-  $("victory-text").textContent = `${enemy.name} est vaincu ! Tu gagnes ${gold} pièces d'or.`;
+  addLog(`🎉 ${enemy.name} vaincu !`);
+  $("victory-text").textContent = `${enemy.name} est vaincu ! Bien joué !`;
   victoryOverlay.classList.remove("hidden");
   saveState();
 }
@@ -1159,7 +1155,7 @@ document.addEventListener("keydown", e => {
 
 // ---------- UI helpers ----------
 function updateStats() {
-  statsEl.textContent = `PV : ${Math.max(0, state.playerHp)}/${PLAYER_HP} · Or : ${state.gold} · Victoires : ${state.totalKills}`;
+  statsEl.textContent = `PV : ${Math.max(0, state.playerHp)}/${PLAYER_HP} · Victoires : ${state.totalKills}`;
 }
 function showFeedback(msg, cls) { feedback.textContent = msg; feedback.className = cls; }
 function addLog(msg) {
