@@ -70,6 +70,45 @@
   #enemy-sprite { position: absolute; top: 18px; left: 42px; font-size: 3.6rem; line-height: 1; z-index: 2; }
   #player-sprite { position: absolute; bottom: 42px; right: 46px; font-size: 4.4rem; line-height: 1; z-index: 4; }
   #enemy-sprite.hit, #player-sprite.hit { animation: shake .3s; }
+  #enemy-sprite.spawn { animation: spawnIn .45s ease-out; }
+  #player-sprite.lunge { animation: lunge .35s ease-in; }
+  @keyframes spawnIn {
+    from { transform: translateY(-60px) scale(.3); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  @keyframes lunge {
+    0% { transform: translate(0, 0); }
+    35% { transform: translate(-120px, -60px) scale(1.1); }
+    60% { transform: translate(-120px, -60px) scale(1.1); }
+    100% { transform: translate(0, 0); }
+  }
+  #battle-scene.crit-shake { animation: sceneShake .4s; }
+  @keyframes sceneShake {
+    0%,100% { transform: translate(0, 0); }
+    20% { transform: translate(-6px, 3px); }
+    40% { transform: translate(6px, -3px); }
+    60% { transform: translate(-4px, -2px); }
+    80% { transform: translate(4px, 2px); }
+  }
+  #streak-badge {
+    position: absolute; top: 8px; left: 10px;
+    background: rgba(0,0,0,.55); color: var(--accent);
+    border: 2px solid #000; border-radius: 10px;
+    padding: 3px 10px; font-size: 0.85rem; font-weight: bold;
+    z-index: 5; transition: transform .15s;
+  }
+  #streak-badge.pop { animation: streakPop .3s; }
+  @keyframes streakPop {
+    50% { transform: scale(1.35) rotate(-4deg); }
+  }
+  .sparkle {
+    position: absolute; font-size: 1.1rem; pointer-events: none;
+    animation: sparkle .7s forwards; z-index: 6;
+  }
+  @keyframes sparkle {
+    from { transform: scale(.4) rotate(0deg); opacity: 1; }
+    to { transform: scale(1.4) rotate(180deg); opacity: 0; }
+  }
   @keyframes shake {
     0%,100% { transform: translateX(0); }
     25% { transform: translateX(-10px) rotate(-5deg); }
@@ -199,6 +238,7 @@
     <div class="platform" id="platform-player"></div>
     <div id="enemy-sprite">🐱</div>
     <div id="player-sprite">🦸</div>
+    <div id="streak-badge" hidden>🔥 x0</div>
     <div class="info-box" id="enemy-area">
       <div id="enemy-name">Chatomon</div>
       <div class="hp-bar-outer"><div class="hp-bar-inner" id="enemy-hp"></div></div>
@@ -557,10 +597,13 @@ function spawnEnemy() {
   const hp = Math.round(c.baseHp * (1 + state.zoneKills * 0.08));
   enemy = { ...c, hp, maxHp: hp };
   enemySprite.textContent = c.sprite;
-  enemySprite.classList.remove("hit");
+  enemySprite.classList.remove("hit", "spawn");
+  void enemySprite.offsetWidth;
+  enemySprite.classList.add("spawn");
+  SFX.spawn();
   enemyName.textContent = `${c.name}`;
   updateEnemyHp();
-  newQuestion();
+  setTimeout(newQuestion, 350);
 }
 
 function updateEnemyHp() {
@@ -629,6 +672,17 @@ function onCorrectAnswer(elapsed) {
     if (crit) damage = Math.round(damage * 2.5);
   }
   state.streak++;
+  updateStreakBadge();
+  SFX[crit ? "crit" : "good"]();
+  playerSprite.classList.remove("lunge");
+  void playerSprite.offsetWidth;
+  playerSprite.classList.add("lunge");
+  if (crit) {
+    battleScene.classList.remove("crit-shake");
+    void battleScene.offsetWidth;
+    battleScene.classList.add("crit-shake");
+  }
+  spawnSparkles(crit ? 7 : 3);
   enemy.hp -= damage;
   addLog(`${crit ? "💥 CRITIQUE ! " : ""}✅ ${currentQuestion.text.replace("?", currentQuestion.answer)} → ${damage} dégâts !`);
   showFeedback(crit ? `💥 COUP CRITIQUE ! ${damage} dégâts !` : `✅ Bien joué ! ${damage} dégâts`, crit ? "crit good" : "good");
@@ -642,6 +696,8 @@ function onCorrectAnswer(elapsed) {
 function onWrongAnswer(given) {
   recordFact(state.currentZone.id, currentQuestion, false);
   state.streak = 0;
+  updateStreakBadge();
+  SFX.bad();
   state.playerHp -= WRONG_PENALTY;
   // Rétroaction pédagogique : la procédure efficace, pas seulement le résultat
   addLog(`❌ ${currentQuestion.text.replace("?", given)} → la réponse était ${currentQuestion.answer}.`);
@@ -658,6 +714,8 @@ function timeUp() {
   awaitingAnswer = false;
   answerInput.disabled = true;
   state.streak = 0;
+  updateStreakBadge();
+  SFX.bad();
   state.playerHp -= TIMEOUT_PENALTY;
   addLog(`⏰ Temps écoulé. ${currentQuestion.procedure}`);
   showFeedback(`⏰ ${currentQuestion.procedure} (−${TIMEOUT_PENALTY} PV)`, "bad");
@@ -705,6 +763,7 @@ function defeatEnemy() {
   state.gold += gold;
   state.zoneKills++;
   state.totalKills++;
+  SFX.victory();
   addLog(`🎉 ${enemy.name} vaincu ! +${gold} or.`);
   $("victory-text").textContent = `${enemy.name} est vaincu ! Tu gagnes ${gold} pièces d'or.`;
   victoryOverlay.classList.remove("hidden");
@@ -720,6 +779,7 @@ function nextEnemy() {
 
 function gameOver() {
   clearInterval(timerId);
+  SFX.faint();
   updatePlayerHp();
   gameoverOverlay.classList.remove("hidden");
   saveState();
@@ -756,6 +816,32 @@ function openProgress() {
   progressOverlay.classList.remove("hidden");
 }
 
+// ---------- Badge de série ----------
+function updateStreakBadge() {
+  const badge = $("streak-badge");
+  if (state.streak >= 2) {
+    badge.hidden = false;
+    badge.textContent = `🔥 Série x${state.streak}`;
+    badge.classList.remove("pop");
+    void badge.offsetWidth;
+    badge.classList.add("pop");
+  } else {
+    badge.hidden = true;
+  }
+}
+
+function spawnSparkles(count) {
+  for (let i = 0; i < count; i++) {
+    const s = document.createElement("div");
+    s.className = "sparkle";
+    s.textContent = Math.random() < 0.5 ? "✨" : "⭐";
+    s.style.left = (12 + Math.random() * 18) + "%";
+    s.style.top = (28 + Math.random() * 20) + "%";
+    battleScene.appendChild(s);
+    setTimeout(() => s.remove(), 700);
+  }
+}
+
 // ---------- Pavé numérique tactile ----------
 function buildNumpad() {
   const pad = $("numpad");
@@ -765,6 +851,7 @@ function buildNumpad() {
     b.className = "num-btn";
     b.textContent = k;
     b.addEventListener("click", () => {
+      SFX.click();
       if (k === "C") { answerInput.value = ""; answerInput.focus(); }
       else if (k === "OK") submitAnswer();
       else { answerInput.value += k; answerInput.focus(); }
@@ -772,6 +859,50 @@ function buildNumpad() {
     pad.appendChild(b);
   }
 }
+
+// ---------- Moteur audio (WebAudio, sons générés, aucun fichier) ----------
+let audioCtx = null;
+let soundEnabled = true;
+function ensureAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+  }
+  if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+}
+function playTone(freq, duration, type = "square", volume = 0.12, delay = 0) {
+  if (!soundEnabled) return;
+  ensureAudio();
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime + delay;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(volume, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(t);
+  osc.stop(t + duration);
+}
+const SFX = {
+  good() { playTone(523, .09); playTone(784, .12, "square", .12, .07); },
+  crit() { playTone(523, .07); playTone(659, .07, "square", .12, .06); playTone(880, .14, "square", .13, .12); playTone(1047, .18, "square", .12, .18); },
+  bad() { playTone(196, .18, "sawtooth", .10); playTone(147, .22, "sawtooth", .10, .10); },
+  victory() { [523, 659, 784, 1047].forEach((f, i) => playTone(f, .16, "triangle", .13, i * .12)); },
+  faint() { playTone(330, .25, "sine", .12); playTone(220, .35, "sine", .12, .18); },
+  click() { playTone(880, .04, "square", .06); },
+  spawn() { playTone(440, .08, "triangle", .08); playTone(660, .10, "triangle", .08, .06); },
+};
+
+document.addEventListener("pointerdown", ensureAudio, { once: true });
+
+document.addEventListener("keydown", e => {
+  if (e.key === "m" || e.key === "M") {
+    soundEnabled = !soundEnabled;
+    addLog(soundEnabled ? "🔊 Son activé" : "🔇 Son coupé");
+  }
+});
 
 // ---------- UI helpers ----------
 function updateStats() {
@@ -810,6 +941,7 @@ buildNumpad();
 updatePlayerHp();
 updateStats();
 addLog("--- Bienvenue dans Calculomon ! ---");
+addLog("💡 Astuce : touche M pour couper/activer le son.");
 openZonePicker();
 </script>
 </body>
