@@ -173,9 +173,9 @@
   #enemy-area { top: 12px; right: 12px; }
   #player-area { bottom: 34px; left: 12px; }
   #enemy-name, #player-name { font-size: .92rem; color: #1e293b; font-weight: 700; text-align: left; }
-  .hp-bar-outer { width: 100%; height: 9px; background: #cbd5e1; border: none; border-radius: 999px; margin-top: 6px; overflow: hidden; }
-  .hp-bar-inner { height: 100%; background: var(--green-deep); border-radius: 999px; transition: width .25s, background .25s; }
-  #hp-text, .hp-text-small { font-size: .74rem; color: #475569; margin-top: 4px; text-align: right; font-weight: 600; }
+  .hp-bar-outer { width: 100%; height: 14px; background: #94a3b8; border: 2px solid #0f172a; border-radius: 4px; margin-top: 6px; overflow: hidden; }
+  .hp-bar-inner { height: 100%; background: #22c55e; transition: width .25s, background .25s; }
+  #hp-text, .hp-text-small { font-size: .82rem; color: #0f172a; margin-top: 4px; text-align: right; font-weight: 700; }
   #pool-bars {
     position: absolute; bottom: 0; left: 0; right: 0; height: 26px;
     display: flex; border-top: 1px solid rgba(0,0,0,.6); z-index: 5;
@@ -201,19 +201,20 @@
   @keyframes fadeout { to { opacity: 0; } }
   /* ---- Zone de réponse ---- */
   #battle-area {
-    background: rgba(255,255,255,.96);
-    border: 1px solid rgba(0,0,0,.12);
+    background: linear-gradient(180deg, #1e293b, #172033);
+    border: 1px solid var(--card-border);
     box-shadow: var(--shadow-sm);
     border-radius: var(--radius);
     padding: 16px;
     display: flex; flex-direction: column; gap: 12px;
-    color: #1e293b;
+    color: var(--text);
   }
   #question {
     font-size: clamp(1.6rem, 5vw, 2rem);
     font-weight: 800; text-align: center;
-    color: #0f172a; letter-spacing: .04em;
+    color: #f8fafc; letter-spacing: .04em;
     font-variant-numeric: tabular-nums;
+    text-shadow: 0 2px 8px rgba(0,0,0,.4);
   }
   #answer-input {
     font-size: 1.5rem; font-weight: 700; text-align: center; padding: 12px;
@@ -234,18 +235,21 @@
   }
   .num-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(79,70,229,.45); }
   .num-btn:active { transform: translateY(1px) scale(.97); filter: brightness(1.1); }
-  #timer-bar-outer { height: 10px; background: #e2e8f0; border: none; border-radius: 999px; overflow: hidden; }
-  #timer-bar-inner { height: 100%; background: var(--green-deep); border-radius: 999px; width: 100%; transition: width .1s linear, background .3s; }
-  #feedback { min-height: 1.5em; text-align: center; font-size: .95rem; font-weight: 600; color: #475569; }
-  #feedback.good { color: #16a34a; }
-  #feedback.bad { color: #dc2626; }
-  #feedback.crit { color: #ea580c; font-size: 1.05rem; }
-  #log {
-    font-size: .8rem; max-height: 92px; overflow-y: auto;
-    background: #0f172a; color: #94a3b8;
-    border: 1px solid #1e293b; border-radius: 12px; padding: 8px 10px;
+  #timer-bar-outer {
+    height: 18px; background: #0b1220;
+    border: 2px solid rgba(255,255,255,.25);
+    border-radius: 6px; overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,.5);
   }
-  #log div { padding: 2px 0; }
+  #timer-bar-inner {
+    height: 100%; background: #22c55e;
+    border-radius: 4px; width: 100%;
+    transition: width .1s linear, background .3s;
+  }
+  #feedback { min-height: 1.6em; text-align: center; font-size: 1rem; font-weight: 700; color: #cbd5e1; }
+  #feedback.good { color: #4ade80; }
+  #feedback.bad { color: #f87171; }
+  #feedback.crit { color: #fb923c; font-size: 1.1rem; }
   .btn {
     background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.08));
     color: var(--text);
@@ -392,10 +396,7 @@
     <div id="numpad"></div>
     <div id="timer-bar-outer"><div id="timer-bar-inner"></div></div>
     <div id="feedback"></div>
-    <div id="log"></div>
     <div class="row">
-      <button class="btn" id="btn-attack">Attaquer !</button>
-      <button class="btn" id="btn-flee">Fuir</button>
       <button class="btn" id="btn-map">🗺️ Carte</button>
       <button class="btn" id="btn-progress">📈 Progrès</button>
     </div>
@@ -848,7 +849,6 @@ const questionEl = $("question");
 const answerInput = $("answer-input");
 const timerBar = $("timer-bar-inner");
 const feedback = $("feedback");
-const logEl = $("log");
 const battleScene = $("battle-scene");
 const playerSprite = $("player-sprite");
 const playerHpBar = $("player-hp");
@@ -1247,23 +1247,11 @@ function updateStats() {
   statsEl.textContent = `PV : ${Math.max(0, state.playerHp)}/${PLAYER_HP} · Victoires : ${state.totalKills}`;
 }
 function showFeedback(msg, cls) { feedback.textContent = msg; feedback.className = cls; }
-function addLog(msg) {
-  const div = document.createElement("div");
-  div.textContent = msg;
-  logEl.prepend(div);
-  while (logEl.children.length > 30) logEl.removeChild(logEl.lastChild);
-}
+function addLog(msg) { }
 
 // ---------- Événements ----------
-$("btn-attack").addEventListener("click", submitAnswer);
 answerInput.addEventListener("keydown", e => { if (e.key === "Enter") submitAnswer(); });
-$("btn-flee").addEventListener("click", () => {
-  if (!awaitingAnswer) return;
-  clearInterval(timerId);
-  awaitingAnswer = false;
-  addLog(`🏃 Tu fuis ${enemy.name}...`);
-  spawnEnemy();
-});
+
 $("btn-map").addEventListener("click", openZonePicker);
 $("btn-progress").addEventListener("click", openProgress);
 $("btn-close-progress").addEventListener("click", () => {
